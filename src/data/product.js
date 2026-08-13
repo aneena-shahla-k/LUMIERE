@@ -6,7 +6,7 @@ import img5 from "../images/barriercream.jpg";
 import img6 from "../images/milky.jpg";
 import img7 from "../images/360.jpg";
 import img8 from "../images/serum2.jpg";
-import serumFront from "../images/see.jpg";
+// import serumFront from "../images/see.jpg";
 import serumAngle from "../images/see1.jpg";
 import serumSide from "../images/see2.jpg";
 import serumBack from "../images/see.jpg";

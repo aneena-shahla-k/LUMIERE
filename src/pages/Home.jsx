@@ -5,7 +5,7 @@ import BrandManifesto from "../components/BrandManifesto";
 import RitualSection from "../components/RitualSection";
 import CollectionSection from "../components/CollectionSection";
 import ResultsSection from "../components/ResultsSection";
-import BottleScrollAnimation from "../components/BottleScrollAnimation";
+// import BottleScrollAnimation from "../components/BottleScrollAnimation";
 import LumiereEdit from "../components/LumiereEdit";
 
 export default function Home() {

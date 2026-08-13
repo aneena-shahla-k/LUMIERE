@@ -1,5 +1,5 @@
 import React from "react";
-import { ArrowUpRight, ArrowUp } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import "../styles/footer.css";
 
 const footerLinks = {
@@ -26,13 +26,6 @@ const footerLinks = {
 };
 
 export default function Footer() {
-  const scrollTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  };
-
   return (
     <footer className="liquid-footer">
 

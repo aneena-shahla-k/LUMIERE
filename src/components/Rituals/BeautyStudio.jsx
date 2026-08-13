@@ -7,7 +7,6 @@ import {
   Upload,
   Sparkles,
   Check,
-  Plus,
   Wand2,
   MessageCircle,
   X,
@@ -248,12 +247,12 @@ export default function BeautyStudio() {
     setStep((current) => Math.max(current - 1, 0));
   };
 
-  const scrollToStudio = () => {
-    studioRef.current?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  };
+//   const scrollToStudio = () => {
+//     studioRef.current?.scrollIntoView({
+//       behavior: "smooth",
+//       block: "start",
+//     });
+//   };
 
   const readingForTone = aiSkinReadings[skinTone] || aiSkinReadings.medium;
 
