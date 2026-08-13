@@ -1,0 +1,1099 @@
+/* =====================================================
+   LUMIÈRE EDIT
+===================================================== */
+
+.lumiere-edit {
+  width: 100%;
+  padding: 130px 0;
+  background: #f5f2eb;
+  color: #292722;
+  overflow: hidden;
+}
+
+.lumiere-edit-inner {
+  width: min(1440px, calc(100% - 80px));
+  margin: 0 auto;
+
+  display: grid;
+  grid-template-columns: 0.72fr 1.28fr;
+
+  min-height: 650px;
+}
+
+
+/* =====================================================
+   LEFT INTRO
+===================================================== */
+
+.lumiere-edit-intro {
+  position: relative;
+
+  padding:
+    35px
+    65px
+    35px
+    10px;
+
+  display: flex;
+  flex-direction: column;
+
+  justify-content: center;
+
+  border-right:
+    1px solid
+    rgba(41, 39, 34, 0.12);
+}
+
+.lumiere-edit-eyebrow {
+  margin-bottom: 34px;
+
+  font-family:
+    Arial,
+    sans-serif;
+
+  font-size: 8px;
+
+  letter-spacing: 0.28em;
+
+  color:
+    rgba(41, 39, 34, 0.48);
+}
+
+.lumiere-edit-intro h2 {
+  margin: 0;
+
+  font-family:
+    "Cormorant Garamond",
+    "Times New Roman",
+    serif;
+
+  font-weight: 400;
+
+  font-size:
+    clamp(
+      52px,
+      5vw,
+      82px
+    );
+
+  line-height: 0.88;
+
+  letter-spacing:
+    -0.055em;
+}
+
+.lumiere-edit-intro h2 em {
+  color:
+    rgba(41, 39, 34, 0.48);
+
+  font-style: italic;
+}
+
+.lumiere-edit-intro p {
+  max-width: 330px;
+
+  margin:
+    38px 0 32px;
+
+  font-family:
+    Arial,
+    sans-serif;
+
+  font-size: 11px;
+
+  line-height: 1.7;
+
+  color:
+    rgba(41, 39, 34, 0.55);
+}
+
+.lumiere-edit-explore {
+  width: fit-content;
+
+  display: flex;
+  align-items: center;
+  gap: 18px;
+
+  padding: 0 0 8px;
+
+  border: 0;
+  border-bottom:
+    1px solid
+    rgba(41, 39, 34, 0.32);
+
+  background: transparent;
+
+  color: #292722;
+
+  font-family:
+    Arial,
+    sans-serif;
+
+  font-size: 8px;
+
+  letter-spacing:
+    0.17em;
+
+  cursor: pointer;
+
+  transition:
+    gap 0.35s ease,
+    border-color 0.35s ease;
+}
+
+.lumiere-edit-explore:hover {
+  gap: 25px;
+
+  border-color:
+    #292722;
+}
+
+
+/* =====================================================
+   PROGRESS
+===================================================== */
+
+.lumiere-edit-progress {
+  margin-top: 85px;
+
+  width: 100%;
+  max-width: 280px;
+}
+
+.lumiere-edit-progress-count {
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
+
+  margin-bottom: 13px;
+
+  font-family:
+    Arial,
+    sans-serif;
+
+  font-size: 7px;
+
+  letter-spacing:
+    0.12em;
+
+  color:
+    rgba(41, 39, 34, 0.45);
+}
+
+.progress-divider {
+  opacity: 0.35;
+}
+
+.lumiere-edit-progress-line {
+  position: relative;
+
+  width: 100%;
+  height: 1px;
+
+  background:
+    rgba(41, 39, 34, 0.12);
+}
+
+.lumiere-edit-progress-line span {
+  position: absolute;
+
+  left: 0;
+  top: 0;
+
+  height: 1px;
+
+  background:
+    #292722;
+
+  transition:
+    width 0.45s
+    cubic-bezier(
+      0.22,
+      1,
+      0.36,
+      1
+    );
+}
+
+
+/* =====================================================
+   CAROUSEL
+===================================================== */
+
+.lumiere-edit-carousel {
+  position: relative;
+
+  min-width: 0;
+
+  padding-left: 28px;
+}
+
+.lumiere-edit-controls {
+  height: 45px;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 8px;
+
+  padding-right: 4px;
+}
+
+.lumiere-edit-controls button {
+  width: 38px;
+  height: 38px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border:
+    1px solid
+    rgba(41, 39, 34, 0.16);
+
+  border-radius: 50%;
+
+  background:
+    rgba(255, 255, 255, 0.38);
+
+  color: #292722;
+
+  cursor: pointer;
+
+  transition:
+    background 0.3s ease,
+    transform 0.3s ease;
+}
+
+.lumiere-edit-controls button:hover {
+  background:
+    rgba(255, 255, 255, 0.8);
+
+  transform:
+    translateY(-2px);
+}
+
+
+/* =====================================================
+   TRACK
+===================================================== */
+
+.lumiere-edit-track {
+  display: flex;
+
+  gap: 22px;
+
+  width: 100%;
+
+  overflow-x: auto;
+
+  padding:
+    18px 5px 30px;
+
+  scroll-behavior: smooth;
+
+  scrollbar-width: none;
+
+  cursor: grab;
+
+  user-select: none;
+}
+
+.lumiere-edit-track::-webkit-scrollbar {
+  display: none;
+}
+
+.lumiere-edit-track.is-dragging {
+  cursor: grabbing;
+
+  scroll-behavior: auto;
+}
+
+
+/* =====================================================
+   CARD
+===================================================== */
+
+.lumiere-edit-card {
+  flex:
+    0 0
+    clamp(
+      280px,
+      28vw,
+      355px
+    );
+
+  overflow: hidden;
+
+  border-left:
+    1px solid
+    rgba(41, 39, 34, 0.12);
+
+  transition:
+    transform 0.45s
+    cubic-bezier(
+      0.22,
+      1,
+      0.36,
+      1
+    );
+}
+
+.lumiere-edit-card:hover {
+  transform:
+    translateY(-7px);
+}
+
+
+/* =====================================================
+   IMAGE
+===================================================== */
+
+.lumiere-edit-image-wrap {
+  position: relative;
+
+  width: 100%;
+
+  aspect-ratio: 0.78;
+
+  overflow: hidden;
+
+  background:
+    #e8e2d8;
+}
+
+.lumiere-edit-image-wrap img {
+  width: 100%;
+  height: 100%;
+
+  display: block;
+
+  object-fit: cover;
+
+  pointer-events: none;
+
+  transition:
+    transform 0.9s
+    cubic-bezier(
+      0.22,
+      1,
+      0.36,
+      1
+    );
+}
+
+.lumiere-edit-card:hover
+.lumiere-edit-image-wrap img {
+  transform:
+    scale(1.045);
+}
+
+
+/* =====================================================
+   IMAGE NUMBER
+===================================================== */
+
+.lumiere-edit-image-number {
+  position: absolute;
+
+  top: 17px;
+  left: 17px;
+
+  width: 31px;
+  height: 31px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.6);
+
+  border-radius: 50%;
+
+  background:
+    rgba(255, 255, 255, 0.2);
+
+  backdrop-filter:
+    blur(12px);
+
+  -webkit-backdrop-filter:
+    blur(12px);
+
+  color: white;
+
+  font-family:
+    Arial,
+    sans-serif;
+
+  font-size: 7px;
+
+  letter-spacing:
+    0.08em;
+}
+
+
+/* =====================================================
+   CARD ARROW
+===================================================== */
+
+.lumiere-edit-card-arrow {
+  position: absolute;
+
+  right: 17px;
+  top: 17px;
+
+  width: 38px;
+  height: 38px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.55);
+
+  border-radius: 50%;
+
+  background:
+    rgba(255, 255, 255, 0.26);
+
+  backdrop-filter:
+    blur(14px);
+
+  -webkit-backdrop-filter:
+    blur(14px);
+
+  color: white;
+
+  cursor: pointer;
+
+  transition:
+    background 0.3s ease,
+    transform 0.3s ease;
+}
+
+.lumiere-edit-card-arrow:hover {
+  background:
+    rgba(255, 255, 255, 0.8);
+
+  color:
+    #292722;
+
+  transform:
+    rotate(45deg);
+}
+
+
+/* =====================================================
+   CARD CONTENT
+===================================================== */
+
+.lumiere-edit-card-content {
+  padding:
+    25px
+    20px
+    20px;
+}
+
+.lumiere-edit-card-top {
+  display: flex;
+
+  justify-content: space-between;
+
+  margin-bottom: 17px;
+
+  font-family:
+    Arial,
+    sans-serif;
+
+  font-size: 6px;
+
+  letter-spacing:
+    0.22em;
+
+  color:
+    rgba(41, 39, 34, 0.38);
+}
+
+.lumiere-edit-card h3 {
+  margin: 0;
+
+  font-family:
+    "Cormorant Garamond",
+    "Times New Roman",
+    serif;
+
+  font-size: 37px;
+
+  font-weight: 400;
+
+  line-height: 0.9;
+
+  letter-spacing:
+    -0.04em;
+}
+
+.lumiere-edit-card h4 {
+  margin:
+    10px 0 15px;
+
+  font-family:
+    "Cormorant Garamond",
+    serif;
+
+  font-size: 18px;
+
+  font-weight: 400;
+
+  font-style: italic;
+
+  color:
+    rgba(41, 39, 34, 0.58);
+}
+
+.lumiere-edit-card p {
+  max-width: 280px;
+
+  margin: 0 0 17px;
+
+  font-family:
+    Arial,
+    sans-serif;
+
+  font-size: 9px;
+
+  line-height: 1.65;
+
+  color:
+    rgba(41, 39, 34, 0.52);
+}
+
+.lumiere-edit-ingredients {
+  padding-top: 14px;
+
+  border-top:
+    1px solid
+    rgba(41, 39, 34, 0.09);
+
+  font-family:
+    Arial,
+    sans-serif;
+
+  font-size: 7px;
+
+  line-height: 1.5;
+
+  letter-spacing:
+    0.05em;
+
+  color:
+    rgba(41, 39, 34, 0.45);
+}
+
+
+/* =====================================================
+   DISCOVER
+===================================================== */
+
+.lumiere-edit-discover {
+  display: flex;
+  align-items: center;
+
+  gap: 13px;
+
+  margin-top: 24px;
+
+  padding: 0;
+
+  border: 0;
+
+  background: transparent;
+
+  color: #292722;
+
+  font-family:
+    Arial,
+    sans-serif;
+
+  font-size: 7px;
+
+  letter-spacing:
+    0.17em;
+
+  cursor: pointer;
+
+  transition:
+    gap 0.3s ease;
+}
+
+.lumiere-edit-discover:hover {
+  gap: 19px;
+}
+
+
+/* =====================================================
+   TABLET
+===================================================== */
+
+@media (max-width: 1000px) {
+
+  .lumiere-edit {
+    padding:
+      100px 0;
+  }
+
+  .lumiere-edit-inner {
+    width:
+      calc(100% - 50px);
+
+    grid-template-columns:
+      0.65fr 1.35fr;
+  }
+
+  .lumiere-edit-intro {
+    padding-right: 35px;
+  }
+
+  .lumiere-edit-intro h2 {
+    font-size: 58px;
+  }
+
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 700px) {
+
+  .lumiere-edit {
+    padding:
+      80px 0;
+  }
+
+  .lumiere-edit-inner {
+    width: 100%;
+
+    display: block;
+  }
+
+  .lumiere-edit-intro {
+    padding:
+      0 22px 45px;
+
+    border-right: 0;
+  }
+
+  .lumiere-edit-eyebrow {
+    margin-bottom: 25px;
+  }
+
+  .lumiere-edit-intro h2 {
+    font-size:
+      clamp(
+        52px,
+        15vw,
+        72px
+      );
+  }
+
+  .lumiere-edit-intro p {
+    margin-top: 28px;
+  }
+
+  .lumiere-edit-progress {
+    margin-top: 45px;
+  }
+
+  .lumiere-edit-carousel {
+    padding-left: 22px;
+  }
+
+  .lumiere-edit-controls {
+    justify-content: flex-start;
+
+    padding-right: 22px;
+
+    margin-bottom: 5px;
+  }
+
+  .lumiere-edit-track {
+    gap: 15px;
+
+    padding:
+      15px 22px 25px 0;
+  }
+
+  .lumiere-edit-card {
+    flex-basis:
+      78vw;
+
+    border-left: 0;
+  }
+
+  .lumiere-edit-card-content {
+    padding:
+      22px 12px;
+  }
+
+  .lumiere-edit-card h3 {
+    font-size: 34px;
+  }
+
+}
+
+
+/* =====================================================
+   REDUCED MOTION
+===================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .lumiere-edit,
+  .lumiere-edit *,
+  .lumiere-edit *::before,
+  .lumiere-edit *::after {
+    scroll-behavior: auto !important;
+
+    transition: none !important;
+  }
+
+}
+/* =========================================
+   HOME PRODUCT / DISCOVERY CAROUSEL
+========================================= */
+
+.home-discovery-section {
+  padding: 90px 0;
+  background: #f7f5ef;
+  overflow: hidden;
+}
+
+.discovery-layout {
+  display: grid;
+  grid-template-columns: 0.8fr 2.2fr;
+  gap: 55px;
+  align-items: center;
+  padding: 0 55px;
+}
+
+.discovery-intro {
+  padding-right: 20px;
+}
+
+.discovery-intro h2 {
+  margin: 0;
+  font-family: "Cormorant Garamond", serif;
+  font-size: clamp(42px, 4vw, 64px);
+  font-weight: 400;
+  line-height: 0.95;
+  color: #26382f;
+  letter-spacing: -0.04em;
+}
+
+.discovery-intro p {
+  margin: 25px 0 30px;
+  max-width: 360px;
+
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.7;
+  color: rgba(38, 56, 47, 0.62);
+}
+
+.discovery-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+
+  color: #26382f;
+  text-decoration: none;
+
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+
+  border-bottom: 1px solid rgba(38, 56, 47, 0.35);
+  padding-bottom: 8px;
+}
+
+
+/* =========================================
+   HORIZONTAL SCROLL AREA
+========================================= */
+
+.discovery-scroll {
+  display: flex;
+  gap: 18px;
+
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  padding: 10px 55px 20px 0;
+
+  scroll-behavior: smooth;
+
+  scrollbar-width: none;
+}
+
+.discovery-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+
+/* =========================================
+   SMALLER CARDS
+========================================= */
+
+.discovery-card {
+  flex: 0 0 250px;
+  width: 250px;
+
+  position: relative;
+}
+
+.discovery-card-image {
+  position: relative;
+
+  width: 100%;
+  height: 330px;
+
+  overflow: hidden;
+
+  border-radius: 4px;
+
+  background: #eee9df;
+}
+
+.discovery-card-image img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+
+  display: block;
+
+  transition:
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.discovery-card:hover
+.discovery-card-image img {
+  transform: scale(1.045);
+}
+
+
+/* =========================================
+   HEART BUTTON
+========================================= */
+
+.discovery-heart {
+  position: absolute;
+
+  top: 12px;
+  right: 12px;
+
+  width: 34px;
+  height: 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid rgba(40, 37, 33, 0.08);
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.82);
+
+  backdrop-filter: blur(10px);
+
+  cursor: pointer;
+
+  transition:
+    transform 0.3s ease,
+    background 0.3s ease;
+}
+
+.discovery-heart:hover {
+  transform: scale(1.08);
+  background: #fff;
+}
+
+
+/* =========================================
+   CARD CONTENT
+========================================= */
+
+.discovery-rating {
+  margin-top: 13px;
+
+  font-size: 13px;
+  letter-spacing: 2px;
+
+  color: #875d65;
+}
+
+.discovery-card h3 {
+  margin: 10px 0 8px;
+
+  font-family: Arial, sans-serif;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  line-height: 1.4;
+
+  color: #26382f;
+}
+
+.discovery-card p {
+  margin: 0;
+
+  font-family: Arial, sans-serif;
+
+  font-size: 12px;
+  line-height: 1.65;
+
+  color: rgba(38, 56, 47, 0.62);
+
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+
+  overflow: hidden;
+}
+
+.discovery-price {
+  margin-top: 17px;
+
+  font-family: Arial, sans-serif;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  color: #26382f;
+}
+
+
+/* =========================================
+   DESKTOP — 4 CARDS
+========================================= */
+
+@media (min-width: 1200px) {
+
+  .discovery-card {
+    flex: 0 0 235px;
+    width: 235px;
+  }
+
+  .discovery-card-image {
+    height: 310px;
+  }
+
+}
+
+
+/* =========================================
+   TABLET
+========================================= */
+
+@media (max-width: 1000px) {
+
+  .discovery-layout {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    padding-left: 35px;
+  }
+
+  .discovery-intro {
+    padding-right: 35px;
+  }
+
+  .discovery-scroll {
+    padding-left: 0;
+    padding-right: 35px;
+  }
+
+  .discovery-card {
+    flex: 0 0 235px;
+    width: 235px;
+  }
+
+  .discovery-card-image {
+    height: 305px;
+  }
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 600px) {
+
+  .home-discovery-section {
+    padding: 65px 0;
+  }
+
+  .discovery-layout {
+    display: block;
+    padding: 0;
+  }
+
+  .discovery-intro {
+    padding: 0 20px;
+    margin-bottom: 30px;
+  }
+
+  .discovery-intro h2 {
+    font-size: 43px;
+  }
+
+  .discovery-intro p {
+    font-size: 12px;
+    max-width: 300px;
+  }
+
+  .discovery-scroll {
+    gap: 14px;
+
+    padding:
+      0 20px 15px;
+  }
+
+  .discovery-card {
+    flex: 0 0 205px;
+    width: 205px;
+  }
+
+  .discovery-card-image {
+    height: 270px;
+  }
+
+  .discovery-card h3 {
+    font-size: 13px;
+  }
+
+  .discovery-card p {
+    font-size: 11px;
+  }
+
+  .discovery-price {
+    font-size: 12px;
+  }
+
+  .discovery-heart {
+    width: 30px;
+    height: 30px;
+
+    top: 9px;
+    right: 9px;
+  }
+}

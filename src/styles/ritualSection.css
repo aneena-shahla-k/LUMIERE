@@ -1,0 +1,611 @@
+/* =========================================================
+   SECTION 04 — THE RITUAL
+========================================================= */
+
+.ritual-section {
+  position: relative;
+
+  width: 100%;
+
+  min-height: 100svh;
+
+  box-sizing: border-box;
+
+  padding:
+    30px
+    5vw
+    50px;
+
+  background: #eee9df;
+
+  color: #292622;
+
+  overflow: hidden;
+}
+
+
+/* =========================================================
+   TOP BAR
+========================================================= */
+
+.ritual-topbar {
+  display: grid;
+  /* grid-template-columns:
+    1fr
+    1fr
+    1fr; */
+  align-items: center;
+  padding-bottom: 20px;
+  border-bottom:
+    1px solid
+    rgba(41, 38, 34, 0.15);
+  font-family:
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+  font-size: 2px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+
+  color:
+    rgba(41, 38, 34, 0.48);
+}
+
+.ritual-topbar span:nth-child(2) {
+  text-align: center;
+}
+
+.ritual-topbar span:last-child {
+  text-align: right;
+}
+
+
+/* =========================================================
+   INTRO
+========================================================= */
+
+.ritual-intro {
+  display: grid;
+
+  grid-template-columns:
+    1.25fr
+    0.75fr;
+
+  gap: 7vw;
+
+  padding:
+    9vh
+    3vw
+    8vh;
+}
+
+
+/* LEFT */
+
+.ritual-intro-left {
+  align-self: center;
+}
+
+.ritual-eyebrow {
+  display: block;
+
+  margin-bottom: 24px;
+
+  font-family:
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+
+  font-size: 8px;
+
+  letter-spacing: 0.3em;
+
+  color:
+    rgba(41, 38, 34, 0.48);
+}
+
+
+.ritual-intro-left h2 {
+  margin: 0;
+  font-family:
+    "Cormorant Garamond",
+    "Times New Roman",
+    serif;
+
+  font-size:60px;
+
+  line-height: 0.8;
+
+  font-weight: 400;
+
+  letter-spacing: -0.06em;
+
+  color: #292622;
+}
+
+
+/* RIGHT */
+
+.ritual-intro-right {
+  align-self: end;
+
+  max-width: 300px;
+
+  padding-bottom: 5px;
+}
+
+
+.ritual-intro-right p {
+  margin: 0;
+
+  font-family:
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+
+  font-size: 13px;
+
+  line-height: 1.65;
+
+  color:
+    rgba(41, 38, 34, 0.68);
+}
+
+
+.ritual-intro-line {
+  width: 90px;
+
+  height: 1px;
+
+  margin:
+    27px 0
+    17px;
+
+  background:
+    rgba(41, 38, 34, 0.45);
+}
+
+
+.ritual-intro-right > span {
+  font-family:
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+
+  font-size: 7px;
+
+  line-height: 1.7;
+
+  letter-spacing: 0.22em;
+
+  color:
+    rgba(41, 38, 34, 0.42);
+}
+
+
+/* =========================================================
+   RITUAL GRID
+========================================================= */
+
+.ritual-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 22px;
+
+  padding:
+    0
+    3vw;
+}
+
+
+/* =========================================================
+   CARD
+========================================================= */
+
+.ritual-card {
+  min-width: 0;
+}
+
+
+/* =========================================================
+   CARD HEADER
+========================================================= */
+
+.ritual-card-header {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  padding:
+    13px
+    0;
+
+  border-top:
+    1px solid
+    rgba(41, 38, 34, 0.35);
+
+  border-bottom:
+    1px solid
+    rgba(41, 38, 34, 0.14);
+}
+
+
+.ritual-number,
+.ritual-label {
+  font-family:
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+
+  font-size: 7px;
+
+  letter-spacing: 0.25em;
+
+  color:
+    rgba(41, 38, 34, 0.48);
+}
+
+
+.ritual-label {
+  color:
+    rgba(41, 38, 34, 0.7);
+}
+
+
+/* =========================================================
+   IMAGE
+========================================================= */
+
+.ritual-image-wrap {
+  position: relative;
+
+  width: 100%;
+
+  aspect-ratio: 0.86 / 1;
+
+  overflow: hidden;
+
+  background: #ddd6ca;
+
+  margin-top: 14px;
+}
+
+
+.ritual-image {
+  width: 100%;
+
+  height: 100%;
+
+  display: block;
+
+  object-fit: cover;
+
+  object-position: center;
+
+  filter:
+    saturate(0.82)
+    contrast(0.96);
+
+  transition:
+    transform 0.7s
+    cubic-bezier(
+      0.22,
+      1,
+      0.36,
+      1
+    );
+}
+
+
+/* ONLY HOVER — NO SCROLL MOTION */
+
+.ritual-card:hover .ritual-image {
+  transform: scale(1.025);
+}
+
+
+/* =========================================================
+   CARD CONTENT
+========================================================= */
+
+.ritual-card-content {
+  padding-top: 19px;
+}
+
+
+.ritual-card-content h3 {
+  margin: 0;
+
+  font-family:
+    "Cormorant Garamond",
+    "Times New Roman",
+    serif;
+
+  font-size: 42px;
+
+  line-height: 0.9;
+
+  font-weight: 400;
+
+  letter-spacing: -0.04em;
+}
+
+
+.ritual-card-content p {
+  max-width: 280px;
+
+  margin:
+    15px 0
+    20px;
+
+  font-family:
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+
+  font-size: 10px;
+
+  line-height: 1.7;
+
+  color:
+    rgba(41, 38, 34, 0.58);
+}
+
+
+.ritual-detail {
+  font-family:
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+
+  font-size: 6px;
+
+  letter-spacing: 0.28em;
+
+  color:
+    rgba(41, 38, 34, 0.4);
+}
+
+
+/* =========================================================
+   BOTTOM STATEMENT
+========================================================= */
+
+.ritual-bottom {
+  display: grid;
+
+  grid-template-columns:
+    1fr
+    1.5fr
+    1fr;
+
+  align-items: end;
+
+  margin:
+    9vh
+    3vw
+    0;
+
+  padding-top: 24px;
+
+  border-top:
+    1px solid
+    rgba(41, 38, 34, 0.16);
+}
+
+
+.ritual-bottom-label,
+.ritual-bottom-mark {
+  font-family:
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+
+  font-size: 6px;
+
+  letter-spacing: 0.28em;
+
+  color:
+    rgba(41, 38, 34, 0.4);
+}
+
+
+.ritual-bottom p {
+  margin: 0;
+
+  font-family:
+    "Cormorant Garamond",
+    "Times New Roman",
+    serif;
+
+  font-size: 27px;
+
+  line-height: 1;
+
+  font-weight: 400;
+
+  letter-spacing: -0.025em;
+}
+
+
+.ritual-bottom-mark {
+  text-align: right;
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 900px) {
+
+  .ritual-intro {
+    grid-template-columns:
+      1fr
+      0.6fr;
+
+    gap: 40px;
+  }
+
+  .ritual-intro-left h2 {
+    font-size: 72px;
+  }
+
+  .ritual-grid {
+    gap: 14px;
+  }
+
+  .ritual-card-content h3 {
+    font-size: 34px;
+  }
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 700px) {
+
+  .ritual-section {
+    padding:
+      22px
+      20px
+      40px;
+  }
+
+
+  /* TOP BAR */
+
+  .ritual-topbar {
+    grid-template-columns:
+      1fr
+      1fr;
+
+    font-size: 6px;
+
+    padding-bottom: 16px;
+  }
+
+  .ritual-topbar span:nth-child(2) {
+    text-align: right;
+  }
+
+  .ritual-topbar span:last-child {
+    display: none;
+  }
+
+
+  /* INTRO */
+
+  .ritual-intro {
+    display: block;
+
+    padding:
+      60px
+      0
+      55px;
+  }
+
+
+  .ritual-eyebrow {
+    margin-bottom: 18px;
+  }
+
+
+  .ritual-intro-left h2 {
+    font-size:
+      clamp(
+        55px,
+        15vw,
+        78px
+      );
+
+    line-height: 0.83;
+  }
+
+
+  .ritual-intro-right {
+    max-width: 280px;
+
+    margin-top: 35px;
+  }
+
+
+  .ritual-intro-right p {
+    font-size: 11px;
+  }
+
+
+  /* CARDS */
+
+  .ritual-grid {
+    display: block;
+
+    padding: 0;
+  }
+
+
+  .ritual-card {
+    margin-bottom: 60px;
+  }
+
+
+  .ritual-card-header {
+    padding: 12px 0;
+  }
+
+
+  .ritual-image-wrap {
+    aspect-ratio: 0.9 / 1;
+  }
+
+
+  .ritual-card-content h3 {
+    font-size: 43px;
+  }
+
+
+  .ritual-card-content p {
+    max-width: 300px;
+
+    font-size: 10px;
+  }
+
+
+  /* BOTTOM */
+
+  .ritual-bottom {
+    display: block;
+
+    margin:
+      20px
+      0
+      0;
+
+    padding-top: 22px;
+  }
+
+
+  .ritual-bottom p {
+    margin:
+      25px
+      0;
+
+    font-size: 25px;
+  }
+
+
+  .ritual-bottom-mark {
+    display: block;
+
+    text-align: left;
+  }
+
+}

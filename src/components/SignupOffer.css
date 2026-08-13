@@ -1,0 +1,661 @@
+/* =========================================================
+   LUMIÈRE — SIGNUP OFFER
+   PREMIUM WELCOME MODAL
+========================================================= */
+
+.signup-offer {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 99999;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 24px;
+
+  background:
+    rgba(27, 24, 21, 0.38);
+
+  backdrop-filter: blur(14px);
+
+  -webkit-backdrop-filter: blur(14px);
+
+  animation:
+    signupOfferFadeIn
+    0.7s
+    cubic-bezier(0.16, 1, 0.3, 1)
+    both;
+}
+
+
+/* =========================================================
+   CARD
+========================================================= */
+
+.signup-offer__card {
+  position: relative;
+
+  width: min(
+    680px,
+    100%
+  );
+
+  min-height: 540px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  overflow: hidden;
+
+  background:
+    #eee9df;
+
+  color: #292521;
+
+  box-shadow:
+    0 35px 100px
+    rgba(0, 0, 0, 0.22);
+
+  animation:
+    signupOfferCardIn
+    0.9s
+    cubic-bezier(0.16, 1, 0.3, 1)
+    both;
+}
+
+
+/* =========================================================
+   SUBTLE INNER FRAME
+========================================================= */
+
+.signup-offer__card::before {
+  content: "";
+
+  position: absolute;
+
+  inset: 14px;
+
+  border: 1px solid
+    rgba(39, 35, 31, 0.12);
+
+  pointer-events: none;
+}
+
+
+/* =========================================================
+   CLOSE BUTTON
+========================================================= */
+
+.signup-offer__close {
+  position: absolute;
+
+  z-index: 10;
+
+  top: 28px;
+
+  right: 30px;
+
+  width: 36px;
+
+  height: 36px;
+
+  padding: 0;
+
+  border: 0;
+
+  background: transparent;
+
+  cursor: pointer;
+}
+
+
+.signup-offer__close span {
+  position: absolute;
+
+  top: 50%;
+
+  left: 50%;
+
+  width: 17px;
+
+  height: 1px;
+
+  background: #292521;
+
+  transition:
+    transform 0.35s ease;
+}
+
+
+.signup-offer__close span:first-child {
+  transform:
+    translate(-50%, -50%)
+    rotate(45deg);
+}
+
+
+.signup-offer__close span:last-child {
+  transform:
+    translate(-50%, -50%)
+    rotate(-45deg);
+}
+
+
+.signup-offer__close:hover span:first-child {
+  transform:
+    translate(-50%, -50%)
+    rotate(0deg);
+}
+
+
+.signup-offer__close:hover span:last-child {
+  transform:
+    translate(-50%, -50%)
+    rotate(0deg);
+}
+
+
+/* =========================================================
+   NUMBER
+========================================================= */
+
+.signup-offer__number {
+  position: absolute;
+
+  top: 32px;
+
+  left: 34px;
+
+  font-family:
+    "Helvetica Neue",
+    Helvetica,
+    Arial,
+    sans-serif;
+
+  font-size: 7px;
+
+  letter-spacing: 0.28em;
+
+  color:
+    rgba(39, 35, 31, 0.4);
+}
+
+
+/* =========================================================
+   MAIN CONTENT
+========================================================= */
+
+.signup-offer__content {
+  position: relative;
+
+  z-index: 2;
+
+  width: min(
+    440px,
+    calc(100% - 80px)
+  );
+
+  text-align: center;
+}
+
+
+/* =========================================================
+   EYEBROW
+========================================================= */
+
+.signup-offer__eyebrow {
+  margin-bottom: 25px;
+
+  font-family:
+    "Helvetica Neue",
+    Helvetica,
+    Arial,
+    sans-serif;
+
+  font-size: 8px;
+
+  font-weight: 400;
+
+  letter-spacing: 0.32em;
+
+  text-transform: uppercase;
+
+  color:
+    rgba(39, 35, 31, 0.52);
+}
+
+
+/* =========================================================
+   HEADING
+========================================================= */
+
+.signup-offer__content h2 {
+  margin: 0;
+
+  font-family:
+    "Cormorant Garamond",
+    "Times New Roman",
+    serif;
+
+  font-size: 40px;
+
+  font-weight: 400;
+
+  line-height: 0.82;
+
+  letter-spacing: -0.055em;
+
+  color: #292521;
+}
+
+
+.signup-offer__content h2 em {
+  font-style: italic;
+
+  font-weight: 400;
+}
+
+
+/* =========================================================
+   LINE
+========================================================= */
+
+.signup-offer__line {
+  width: 70px;
+
+  height: 1px;
+
+  margin:
+    30px auto 25px;
+
+  background:
+    rgba(39, 35, 31, 0.25);
+}
+
+
+/* =========================================================
+   DESCRIPTION
+========================================================= */
+
+.signup-offer__description {
+  width: 300px;
+
+  max-width: 100%;
+
+  margin:
+    0 auto 28px;
+
+  font-family:
+    "Helvetica Neue",
+    Helvetica,
+    Arial,
+    sans-serif;
+
+  font-size: 11px;
+
+  line-height: 1.7;
+
+  letter-spacing: 0.01em;
+
+  color:
+    rgba(39, 35, 31, 0.62);
+}
+
+
+.signup-offer__description strong {
+  font-weight: 500;
+
+  color: #292521;
+}
+
+
+/* =========================================================
+   FORM
+========================================================= */
+
+.signup-offer__form {
+  width: 100%;
+}
+
+
+/* =========================================================
+   INPUT
+========================================================= */
+
+.signup-offer__input-wrapper {
+  width: 100%;
+
+  border-bottom:
+    1px solid
+    rgba(39, 35, 31, 0.28);
+}
+
+
+.signup-offer__input-wrapper input {
+  width: 100%;
+
+  height: 48px;
+
+  padding: 0;
+
+  border: 0;
+
+  outline: none;
+
+  background: transparent;
+
+  text-align: center;
+
+  font-family:
+    "Helvetica Neue",
+    Helvetica,
+    Arial,
+    sans-serif;
+
+  font-size: 9px;
+
+  letter-spacing: 0.18em;
+
+  color: #292521;
+}
+
+
+.signup-offer__input-wrapper input::placeholder {
+  color:
+    rgba(39, 35, 31, 0.42);
+
+  opacity: 1;
+}
+
+
+/* =========================================================
+   SUBMIT
+========================================================= */
+
+.signup-offer__submit {
+  width: 100%;
+
+  height: 52px;
+
+  margin-top: 18px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 20px;
+
+  border: 1px solid #292521;
+
+  background: #292521;
+
+  color: #eee9df;
+
+  cursor: pointer;
+
+  font-family:
+    "Helvetica Neue",
+    Helvetica,
+    Arial,
+    sans-serif;
+
+  font-size: 8px;
+
+  letter-spacing: 0.22em;
+
+  text-transform: uppercase;
+
+  transition:
+    background 0.4s ease,
+    color 0.4s ease;
+}
+
+
+.signup-offer__submit span:last-child {
+  font-size: 16px;
+
+  transition:
+    transform 0.4s
+    cubic-bezier(
+      0.16,
+      1,
+      0.3,
+      1
+    );
+}
+
+
+.signup-offer__submit:hover {
+  background: transparent;
+
+  color: #292521;
+}
+
+
+.signup-offer__submit:hover
+span:last-child {
+  transform:
+    translateX(7px);
+}
+
+
+/* =========================================================
+   FINE PRINT
+========================================================= */
+
+.signup-offer__fine-print {
+  margin: 18px 0 0;
+
+  font-family:
+    "Helvetica Neue",
+    Helvetica,
+    Arial,
+    sans-serif;
+
+  font-size: 7px;
+
+  line-height: 1.6;
+
+  letter-spacing: 0.03em;
+
+  color:
+    rgba(39, 35, 31, 0.38);
+}
+
+
+/* =========================================================
+   BRAND
+========================================================= */
+
+.signup-offer__brand {
+  position: absolute;
+
+  bottom: 30px;
+
+  left: 50%;
+
+  transform:
+    translateX(-50%);
+
+  font-family:
+    "Cormorant Garamond",
+    "Times New Roman",
+    serif;
+
+  font-size: 14px;
+
+  letter-spacing: 0.18em;
+
+  color:
+    rgba(39, 35, 31, 0.35);
+}
+
+
+/* =========================================================
+   ANIMATIONS
+========================================================= */
+
+@keyframes signupOfferFadeIn {
+
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+
+}
+
+
+@keyframes signupOfferCardIn {
+
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(35px)
+      scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0)
+      scale(1);
+  }
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+  .signup-offer {
+    align-items: flex-end;
+    padding: 12px;
+    margin-bottom: 100px;
+  }
+  .signup-offer__card {
+    width: 100%;
+    min-height: 590px;
+    max-height: calc(100svh - 24px);
+  }
+
+
+  .signup-offer__card::before {
+    inset: 10px;
+  }
+  .signup-offer__content {
+    width:
+      calc(100% - 60px);
+    max-width: 400px;
+  }
+
+
+  .signup-offer__number {
+    top: 25px;
+    left: 27px;
+  }
+  .signup-offer__close {
+    top: 20px;
+
+    right: 20px;
+  }
+
+
+  .signup-offer__eyebrow {
+    margin-bottom: 21px;
+
+    font-size: 7px;
+  }
+
+
+  .signup-offer__content h2 {
+    font-size:
+      clamp(
+        48px,
+        15vw,
+        64px
+      );
+  }
+
+
+  .signup-offer__line {
+    margin:
+      25px auto 21px;
+  }
+
+
+  .signup-offer__description {
+    width: 280px;
+
+    font-size: 10px;
+
+    margin-bottom: 25px;
+  }
+
+
+  .signup-offer__input-wrapper input {
+    height: 46px;
+
+    font-size: 8px;
+  }
+
+
+  .signup-offer__submit {
+    height: 50px;
+
+    font-size: 7px;
+  }
+
+
+  .signup-offer__brand {
+    bottom: 23px;
+
+    font-size: 12px;
+  }
+
+}
+
+
+/* =========================================================
+   VERY SMALL MOBILE
+========================================================= */
+
+@media (max-width: 380px) {
+
+  .signup-offer__card {
+    min-height: 550px;
+  }
+
+
+  .signup-offer__content {
+    width:
+      calc(100% - 50px);
+  }
+
+
+  .signup-offer__content h2 {
+    font-size: 45px;
+  }
+
+
+  .signup-offer__description {
+    font-size: 9px;
+  }
+
+}

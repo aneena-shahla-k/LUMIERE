@@ -1,0 +1,1224 @@
+/* =========================================================
+   LUMIÈRE — OUR STORY
+   Heritage / Jewel-tone / Handcrafted
+========================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Noto+Serif+Devanagari:wght@400;600&display=swap');
+
+.our-story {
+  --ink: #2b1a12;
+  --ivory: #f8eedd;
+  --ivory-soft: #fbf3e4;
+  --tan: #f1e1c4;
+  --maroon: #6e1b30;
+  --maroon-deep: #4c1120;
+  --gold: #c6963b;
+  --gold-soft: #ddb868;
+  --terracotta: #b15a34;
+  --teal: #0e5c57;
+
+  width: 100%;
+  overflow: hidden;
+
+  background: var(--ivory);
+
+  color: var(--ink);
+
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+
+/* =========================================================
+   SHARED
+========================================================= */
+
+.story-eyebrow {
+  display: inline-flex;
+
+  flex-direction: column;
+
+  gap: 5px;
+}
+
+.story-eyebrow__en {
+  font-size: 7px;
+
+  letter-spacing: 0.3em;
+
+  text-transform: uppercase;
+
+  color: rgba(43, 26, 18, 0.5);
+}
+
+.story-eyebrow__hi {
+  font-family: "Noto Serif Devanagari", serif;
+
+  font-size: 11px;
+
+  font-style: normal;
+
+  color: var(--gold);
+}
+
+.story-thread-rule {
+  width: 60px;
+  height: 1px;
+
+  margin-top: 28px;
+
+  background:
+    repeating-linear-gradient(
+      90deg,
+      var(--gold) 0px,
+      var(--gold) 3px,
+      transparent 3px,
+      transparent 8px
+    );
+}
+
+.story-devnum {
+  font-family: "Noto Serif Devanagari", serif;
+
+  font-size: 15px;
+
+  color: var(--maroon);
+}
+
+.story-paisley {
+  position: absolute;
+
+  color: var(--gold);
+
+  pointer-events: none;
+}
+
+.story-paisley--hero {
+  top: 22px;
+  left: 22px;
+
+  width: 30px;
+  height: 42px;
+
+  opacity: 0.75;
+
+  z-index: 2;
+}
+
+.story-paisley--ingredient {
+  bottom: 24px;
+  left: 24px;
+
+  width: 34px;
+  height: 48px;
+
+  opacity: 0.6;
+
+  color: var(--ivory-soft);
+}
+
+.story-paisley--quote {
+  top: 50%;
+  left: 50%;
+
+  width: 480px;
+  height: 670px;
+
+  transform: translate(-50%, -50%);
+
+  opacity: 0.05;
+
+  color: var(--gold);
+}
+
+
+/* =========================================================
+   HERO
+========================================================= */
+
+.story-hero {
+  min-height: 100vh;
+
+  display: grid;
+
+  grid-template-columns: 0.85fr 1.15fr;
+
+  align-items: center;
+
+  gap: 70px;
+
+  padding: 150px 7vw 90px;
+
+  background:
+    radial-gradient(
+      circle at 85% 12%,
+      rgba(198, 150, 59, 0.14),
+      transparent 40%
+    ),
+    var(--ivory);
+}
+
+
+/* HERO CONTENT */
+
+.story-hero__content {
+  position: relative;
+
+  z-index: 2;
+}
+
+.story-hero__content h1 {
+  margin: 26px 0 30px;
+
+  max-width: 650px;
+
+  font-family: "Cormorant Garamond", "Times New Roman", serif;
+
+  font-size: clamp(62px, 7vw, 112px);
+
+  font-weight: 400;
+
+  line-height: 0.84;
+
+  letter-spacing: -0.055em;
+
+  color: var(--ink);
+}
+
+.story-hero__content h1 em {
+  color: var(--maroon);
+
+  font-style: italic;
+
+  font-weight: 400;
+}
+
+.story-hero__content p {
+  max-width: 360px;
+
+  margin: 0;
+
+  font-size: 11px;
+
+  line-height: 1.8;
+
+  color: rgba(43, 26, 18, 0.6);
+}
+
+
+/* HERO IMAGE */
+
+.story-hero__image {
+  position: relative;
+
+  height: min(72vh, 720px);
+
+  overflow: hidden;
+
+  border-radius: 220px 220px 28px 28px;
+
+  background: var(--tan);
+
+  border: 1px solid rgba(198, 150, 59, 0.35);
+
+  box-shadow: 0 35px 90px rgba(110, 27, 48, 0.14);
+}
+
+.story-hero__image img {
+  width: 100%;
+  height: 100%;
+
+  display: block;
+
+  object-fit: cover;
+
+  filter: saturate(1.12) contrast(1.02) sepia(0.06);
+}
+
+.story-image-glow {
+  position: absolute;
+
+  width: 280px;
+  height: 280px;
+
+  right: -80px;
+  bottom: -70px;
+
+  border-radius: 50%;
+
+  background: rgba(221, 184, 104, 0.5);
+
+  filter: blur(55px);
+
+  z-index: 1;
+
+  pointer-events: none;
+}
+
+
+/* HERO BADGE */
+
+.story-hero__badge {
+  position: absolute;
+
+  right: 25px;
+  bottom: 25px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 14px 17px;
+
+  border: 1px solid rgba(255, 255, 255, 0.6);
+
+  border-radius: 999px;
+
+  background: rgba(110, 27, 48, 0.55);
+
+  backdrop-filter: blur(18px);
+
+  -webkit-backdrop-filter: blur(18px);
+
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.14);
+
+  z-index: 2;
+}
+
+.story-hero__badge svg {
+  color: var(--gold-soft);
+}
+
+.story-hero__badge span {
+  font-size: 6px;
+
+  line-height: 1.5;
+
+  letter-spacing: 0.2em;
+
+  color: var(--ivory);
+}
+
+
+/* =========================================================
+   INTRODUCTION
+========================================================= */
+
+.story-introduction {
+  padding: 150px 7vw;
+
+  background: var(--ivory-soft);
+}
+
+.story-intro-label {
+  display: flex;
+
+  align-items: flex-start;
+
+  justify-content: space-between;
+
+  padding-bottom: 18px;
+
+  border-bottom: 1px solid rgba(198, 150, 59, 0.35);
+
+  font-size: 7px;
+
+  letter-spacing: 0.28em;
+
+  color: rgba(43, 26, 18, 0.4);
+}
+
+.story-intro-content {
+  display: grid;
+
+  grid-template-columns: 1.1fr 0.9fr;
+
+  gap: 100px;
+
+  padding-top: 75px;
+}
+
+.story-intro-content h2 {
+  margin: 0;
+
+  font-family: "Cormorant Garamond", "Times New Roman", serif;
+
+  font-size: clamp(52px, 6.4vw, 92px);
+
+  line-height: 0.92;
+
+  font-weight: 400;
+
+  letter-spacing: -0.05em;
+}
+
+.story-intro-content h2 em {
+  color: var(--maroon);
+
+  font-style: italic;
+}
+
+.story-intro-text {
+  align-self: end;
+
+  max-width: 390px;
+}
+
+.story-intro-text p {
+  margin: 0 0 25px;
+
+  font-size: 11px;
+
+  line-height: 1.9;
+
+  color: rgba(43, 26, 18, 0.6);
+}
+
+
+/* =========================================================
+   LARGE VISUAL
+========================================================= */
+
+.story-visual {
+  padding: 100px 5vw;
+
+  background: var(--ivory-soft);
+}
+
+.story-visual__image {
+  position: relative;
+
+  width: 100%;
+
+  height: min(78vh, 780px);
+
+  overflow: hidden;
+
+  border-radius: 42px;
+
+  border: 1px solid rgba(198, 150, 59, 0.3);
+}
+
+.story-visual__image img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+
+  display: block;
+
+  filter: saturate(1.1) contrast(1) sepia(0.08);
+}
+
+
+/* FLOATING CARD */
+
+.story-visual__card {
+  position: absolute;
+
+  left: 35px;
+  bottom: 35px;
+
+  width: 260px;
+
+  padding: 30px;
+
+  border: 1px solid rgba(255, 255, 255, 0.5);
+
+  border-radius: 27px;
+
+  background: rgba(78, 20, 38, 0.72);
+
+  backdrop-filter: blur(24px);
+
+  -webkit-backdrop-filter: blur(24px);
+
+  box-shadow: 0 20px 60px rgba(40, 20, 15, 0.25);
+
+  color: var(--ivory);
+}
+
+.story-visual__card .story-devnum {
+  display: block;
+
+  margin-bottom: 30px;
+
+  color: var(--gold-soft);
+}
+
+.story-visual__card h3 {
+  margin: 0;
+
+  font-family: "Cormorant Garamond", serif;
+
+  font-size: 40px;
+
+  line-height: 0.88;
+
+  font-weight: 400;
+
+  letter-spacing: -0.04em;
+}
+
+.story-visual__card p {
+  margin: 22px 0 0;
+
+  font-size: 9px;
+
+  line-height: 1.7;
+
+  color: rgba(248, 238, 221, 0.75);
+}
+
+
+/* =========================================================
+   PHILOSOPHY
+========================================================= */
+
+.story-philosophy {
+  padding: 160px 7vw;
+
+  background: var(--tan);
+}
+
+.story-section-heading {
+  display: flex;
+
+  align-items: flex-end;
+
+  justify-content: space-between;
+
+  gap: 40px;
+
+  margin-bottom: 80px;
+}
+
+.story-section-heading h2 {
+  margin: 12px 0 0;
+
+  font-family: "Cormorant Garamond", serif;
+
+  font-size: clamp(48px, 5.6vw, 84px);
+
+  line-height: 0.88;
+
+  font-weight: 400;
+
+  letter-spacing: -0.05em;
+
+  text-align: right;
+}
+
+.story-section-heading h2 em {
+  color: var(--maroon);
+
+  font-style: italic;
+}
+
+
+/* PHILOSOPHY GRID */
+
+.philosophy-grid {
+  display: grid;
+
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 16px;
+}
+
+.philosophy-card {
+  position: relative;
+
+  min-height: 350px;
+
+  padding: 32px;
+
+  border: 1px solid rgba(198, 150, 59, 0.3);
+
+  border-radius: 30px;
+
+  background: rgba(255, 251, 242, 0.55);
+
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+
+  transition: box-shadow 0.35s ease, transform 0.35s ease;
+}
+
+.philosophy-card:hover {
+  transform: translateY(-4px);
+
+  box-shadow: 0 25px 60px rgba(110, 27, 48, 0.14);
+}
+
+.philosophy-icon {
+  width: 46px;
+  height: 46px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid var(--gold);
+
+  border-radius: 50%;
+
+  background: rgba(198, 150, 59, 0.12);
+
+  color: var(--maroon);
+
+  margin-bottom: 40px;
+}
+
+.philosophy-card > span {
+  display: block;
+
+  margin-bottom: 4px;
+
+  font-size: 7px;
+
+  letter-spacing: 0.25em;
+
+  color: var(--maroon);
+
+  opacity: 0.75;
+}
+
+.philosophy-card h3 {
+  margin: 16px 0 15px;
+
+  font-family: "Cormorant Garamond", serif;
+
+  font-size: 40px;
+
+  font-weight: 400;
+
+  line-height: 0.95;
+
+  letter-spacing: -0.04em;
+}
+
+.philosophy-card p {
+  max-width: 250px;
+
+  margin: 0;
+
+  font-size: 9px;
+
+  line-height: 1.8;
+
+  color: rgba(43, 26, 18, 0.55);
+}
+
+.philosophy-arrow {
+  position: absolute;
+
+  right: 28px;
+  bottom: 28px;
+
+  width: 34px;
+  height: 34px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid rgba(43, 26, 18, 0.15);
+
+  border-radius: 50%;
+
+  color: var(--maroon);
+
+  transition: transform 0.35s ease, background 0.35s ease;
+}
+
+.philosophy-card:hover .philosophy-arrow {
+  transform: translate(3px, -3px);
+
+  background: var(--maroon);
+
+  color: var(--ivory);
+}
+
+
+/* =========================================================
+   INGREDIENT STORY
+========================================================= */
+
+.ingredient-story {
+  position: relative;
+
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  min-height: 800px;
+
+  background: var(--maroon);
+}
+
+.ingredient-story__image {
+  position: relative;
+
+  min-height: 700px;
+
+  overflow: hidden;
+}
+
+.ingredient-story__image img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+
+  display: block;
+
+  filter: saturate(1.05) contrast(0.98) sepia(0.1);
+}
+
+.ingredient-story__content {
+  display: flex;
+
+  flex-direction: column;
+
+  justify-content: center;
+
+  padding: 10vw 8vw;
+
+  color: var(--ivory);
+}
+
+.ingredient-story__content .story-eyebrow__en {
+  color: rgba(248, 238, 221, 0.55);
+}
+
+.ingredient-story__content .story-eyebrow__hi {
+  color: var(--gold-soft);
+}
+
+.ingredient-story__content h2 {
+  margin: 26px 0;
+
+  font-family: "Cormorant Garamond", serif;
+
+  font-size: clamp(52px, 6.4vw, 92px);
+
+  line-height: 0.9;
+
+  font-weight: 400;
+
+  letter-spacing: -0.05em;
+}
+
+.ingredient-story__content h2 em {
+  color: var(--gold-soft);
+
+  font-style: italic;
+}
+
+.ingredient-story__content > p {
+  max-width: 380px;
+
+  margin: 0;
+
+  font-size: 11px;
+
+  line-height: 1.9;
+
+  color: rgba(248, 238, 221, 0.7);
+}
+
+
+/* INGREDIENT LINE */
+
+.ingredient-line {
+  display: flex;
+
+  align-items: center;
+
+  gap: 18px;
+
+  margin-top: 55px;
+
+  padding-top: 25px;
+
+  border-top: 1px solid rgba(198, 150, 59, 0.3);
+}
+
+.ingredient-line div {
+  display: flex;
+
+  align-items: baseline;
+
+  gap: 10px;
+}
+
+.ingredient-line strong {
+  font-size: 7px;
+
+  font-weight: 400;
+
+  letter-spacing: 0.2em;
+
+  color: var(--ivory);
+}
+
+.ingredient-hi {
+  font-family: "Noto Serif Devanagari", serif;
+
+  font-style: normal;
+
+  font-size: 11px;
+
+  color: var(--gold-soft);
+}
+
+.ingredient-line > div > span {
+  margin-left: 4px;
+
+  color: rgba(248, 238, 221, 0.4);
+}
+
+
+/* =========================================================
+   QUOTE
+========================================================= */
+
+.story-quote {
+  position: relative;
+
+  overflow: hidden;
+
+  padding: 190px 30px;
+
+  text-align: center;
+
+  background: var(--maroon-deep);
+
+  color: var(--ivory);
+}
+
+.quote-mark {
+  position: relative;
+
+  width: 34px;
+  height: 48px;
+
+  margin: 0 auto 30px;
+
+  color: var(--gold-soft);
+
+  opacity: 1;
+}
+
+.story-quote h2 {
+  position: relative;
+
+  margin: 0;
+
+  font-family: "Cormorant Garamond", serif;
+
+  font-size: clamp(50px, 7vw, 100px);
+
+  line-height: 0.9;
+
+  font-weight: 400;
+
+  letter-spacing: -0.05em;
+}
+
+.story-quote h2 em {
+  color: var(--gold-soft);
+
+  font-style: italic;
+}
+
+.story-quote p {
+  position: relative;
+
+  max-width: 480px;
+
+  margin: 40px auto 0;
+
+  font-size: 10px;
+
+  line-height: 1.9;
+
+  color: rgba(248, 238, 221, 0.65);
+}
+
+
+/* =========================================================
+   FINAL CTA
+========================================================= */
+
+.story-final {
+  padding: 100px 5vw;
+
+  background: var(--ivory);
+}
+
+.story-final__inner {
+  position: relative;
+
+  min-height: 600px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+
+  overflow: hidden;
+
+  /* border: 1px solid rgba(198, 150, 59, 0.35);   */
+
+  /* border-radius: 42px; */
+
+  /* background:
+    radial-gradient(
+      circle at 50% 40%,
+      rgba(198, 150, 59, 0.22),
+      transparent 45%
+    ),
+    var(--tan); */
+
+  /* box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6); */
+}
+
+.story-final__inner::before {
+  content: "";
+
+  position: absolute;
+
+  width: 450px;
+  height: 450px;
+
+  border-radius: 50%;
+
+  background: rgba(110, 27, 48, 0.12);
+
+  filter: blur(75px);
+
+  pointer-events: none;
+}
+
+.story-final__inner .story-eyebrow {
+  align-items: center;
+}
+
+.story-final__inner h2 {
+  position: relative;
+  margin: 26px 0 45px;
+  font-family: "Cormorant Garamond", serif;
+  font-size:60px;
+
+  line-height: 0.8;
+
+  font-weight: 400;
+
+  letter-spacing: -0.065em;
+}
+
+.story-final__inner h2 em {
+  color: var(--maroon);
+
+  font-style: italic;
+}
+
+
+/* SHOP BUTTON */
+
+.story-shop-button {
+  position: relative;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 14px;
+
+  padding: 7px 7px 7px 22px;
+
+  border-radius: 999px;
+
+  background: var(--maroon);
+
+  color: var(--ivory);
+
+  text-decoration: none;
+
+  font-size: 7px;
+
+  letter-spacing: 0.16em;
+
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+.story-shop-button:hover {
+  transform: translateY(-3px);
+
+  box-shadow: 0 15px 35px rgba(110, 27, 48, 0.32);
+}
+
+.story-shop-button:focus-visible {
+  outline: 2px solid var(--maroon);
+  outline-offset: 3px;
+}
+
+.story-shop-arrow {
+  width: 36px;
+  height: 36px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: var(--gold-soft);
+
+  color: var(--maroon-deep);
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 900px) {
+  .story-hero {
+    grid-template-columns: 1fr;
+
+    min-height: auto;
+
+    padding: 130px 6vw 70px;
+
+    gap: 60px;
+  }
+
+  .story-hero__image {
+    height: 65vh;
+
+    border-radius: 140px 140px 24px 24px;
+  }
+
+  .story-intro-content {
+    grid-template-columns: 1fr;
+
+    gap: 50px;
+  }
+
+  .story-section-heading {
+    align-items: flex-start;
+
+    flex-direction: column;
+  }
+
+  .story-section-heading h2 {
+    text-align: left;
+  }
+
+  .philosophy-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .philosophy-card {
+    min-height: 300px;
+  }
+
+  .ingredient-story {
+    grid-template-columns: 1fr;
+  }
+
+  .ingredient-story__image {
+    min-height: 550px;
+  }
+
+  .ingredient-story__content {
+    padding: 100px 8vw;
+  }
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+  .story-hero {
+    padding: 120px 16px 55px;
+
+    gap: 45px;
+  }
+
+  .story-hero__content h1 {
+    margin: 22px 0 28px;
+
+    font-size: clamp(55px, 16vw, 78px);
+  }
+
+  .story-hero__content p {
+    max-width: 300px;
+
+    font-size: 10px;
+  }
+
+  .story-hero__image {
+    height: 62vh;
+
+    border-radius: 90px 90px 20px 20px;
+  }
+
+  .story-hero__badge {
+    right: 15px;
+    bottom: 15px;
+
+    padding: 11px 13px;
+  }
+
+  .story-paisley--hero {
+    width: 22px;
+    height: 30px;
+  }
+
+  /* INTRO */
+
+  .story-introduction {
+    padding: 90px 18px;
+  }
+
+  .story-intro-content {
+    padding-top: 50px;
+
+    gap: 40px;
+  }
+
+  .story-intro-content h2 {
+    font-size: 54px;
+  }
+
+  /* VISUAL */
+
+  .story-visual {
+    padding: 45px 12px;
+  }
+
+  .story-visual__image {
+    height: 650px;
+
+    border-radius: 28px;
+  }
+
+  .story-visual__card {
+    left: 15px;
+    right: 15px;
+    bottom: 15px;
+
+    width: auto;
+
+    padding: 25px;
+
+    border-radius: 23px;
+  }
+
+  /* PHILOSOPHY */
+
+  .story-philosophy {
+    padding: 100px 18px;
+  }
+
+  .story-section-heading {
+    margin-bottom: 50px;
+  }
+
+  .story-section-heading h2 {
+    font-size: 52px;
+  }
+
+  .philosophy-card {
+    min-height: 320px;
+
+    padding: 27px;
+
+    border-radius: 25px;
+  }
+
+  .philosophy-card h3 {
+    font-size: 38px;
+  }
+
+  /* INGREDIENT */
+
+  .ingredient-story__image {
+    min-height: 450px;
+  }
+
+  .ingredient-story__content {
+    padding: 80px 25px;
+  }
+
+  .ingredient-story__content h2 {
+    font-size: 58px;
+  }
+
+  .ingredient-line {
+    flex-wrap: wrap;
+
+    gap: 10px;
+  }
+
+  .ingredient-line div {
+    gap: 8px;
+  }
+
+  /* QUOTE */
+
+  .story-quote {
+    padding: 130px 20px;
+  }
+
+  .story-quote h2 {
+    font-size: 56px;
+  }
+
+  .story-paisley--quote {
+    width: 340px;
+    height: 480px;
+  }
+
+  /* FINAL */
+
+  .story-final {
+    padding: 45px 12px;
+  }
+
+  .story-final__inner {
+    min-height: 500px;
+
+    padding: 30px;
+
+    border-radius: 28px;
+  }
+
+  .story-final__inner h2 {
+    font-size: 68px;
+  }
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .our-story * {
+    scroll-behavior: auto !important;
+  }
+}

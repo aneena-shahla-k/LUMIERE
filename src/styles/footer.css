@@ -1,0 +1,1141 @@
+/* =====================================================
+   LUMIÈRE
+   LIQUID GLASS FOOTER
+===================================================== */
+
+.liquid-footer {
+  position: relative;
+
+  width: 100%;
+
+  padding:
+    0px 24px 24px;
+
+  overflow: hidden;
+
+  background:
+    #eee9df;
+
+  color:
+    #282521;
+}
+
+
+/* =====================================================
+   AMBIENT LIGHT
+===================================================== */
+
+.footer-orb {
+  position: absolute;
+
+  border-radius: 50%;
+
+  pointer-events: none;
+
+  filter: blur(70px);
+
+  opacity: 0.45;
+}
+
+.footer-orb-one {
+  width: 320px;
+  height: 320px;
+
+  top: 40px;
+  left: 5%;
+
+  background:
+    rgba(255, 255, 255, 0.65);
+}
+
+.footer-orb-two {
+  width: 260px;
+  height: 260px;
+
+  right: 5%;
+  top: 180px;
+
+  background:
+    rgba(255, 255, 255, 0.5);
+}
+
+.footer-orb-three {
+  width: 300px;
+  height: 300px;
+
+  bottom: -100px;
+  left: 40%;
+
+  background:
+    rgba(255, 255, 255, 0.4);
+}
+
+
+/* =====================================================
+   MAIN GLASS
+===================================================== */
+
+.footer-glass {
+  position: relative;
+
+  z-index: 2;
+
+  width: 100%;
+
+  max-width: 1440px;
+
+  margin: 0 auto;
+
+  padding:
+    55px;
+
+  overflow: hidden;
+
+  border-radius: 42px;
+
+  border:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      0.62
+    );
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(
+        255,
+        255,
+        255,
+        0.57
+      ),
+      rgba(
+        255,
+        255,
+        255,
+        0.24
+      )
+    );
+
+  backdrop-filter:
+    blur(32px)
+    saturate(150%);
+
+  -webkit-backdrop-filter:
+    blur(32px)
+    saturate(150%);
+
+  box-shadow:
+    0 30px 80px
+      rgba(
+        47,
+        42,
+        36,
+        0.09
+      ),
+
+    inset 0 1px 0
+      rgba(
+        255,
+        255,
+        255,
+        0.8
+      ),
+
+    inset 0 -1px 0
+      rgba(
+        255,
+        255,
+        255,
+        0.25
+      );
+}
+
+
+/* Glass shine */
+
+.footer-glass::before {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  left: 7%;
+
+  width: 50%;
+
+  height: 1px;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255,255,255,.9),
+      transparent
+    );
+
+  opacity: 0.8;
+}
+
+
+/* =====================================================
+   TOP SECTION
+===================================================== */
+
+.footer-top {
+  display: grid;
+
+  grid-template-columns:
+    1.2fr
+    0.8fr;
+
+  gap: 80px;
+}
+
+
+/* =====================================================
+   BRAND
+===================================================== */
+
+.footer-brand-block {
+  padding:
+    20px 10px;
+}
+
+.footer-micro {
+  display: block;
+
+  margin-bottom: 28px;
+
+  font-family:
+    Arial,
+    sans-serif;
+
+  font-size: 7px;
+
+  letter-spacing:
+    0.28em;
+
+  opacity: 0.42;
+}
+
+.footer-brand-block h2 {
+  margin: 0;
+
+  font-family:
+    "Cormorant Garamond",
+    "Times New Roman",
+    serif;
+
+  font-size:
+    clamp(
+      65px,
+      8vw,
+      120px
+    );
+
+  line-height: 0.78;
+
+  font-weight: 400;
+
+  letter-spacing:
+    -0.055em;
+}
+
+.footer-brand-block p {
+  max-width: 340px;
+
+  margin-top: 34px;
+
+  font-family:
+    Arial,
+    sans-serif;
+
+  font-size: 9px;
+
+  line-height: 1.7;
+
+  color:
+    rgba(
+      40,
+      37,
+      33,
+      0.52
+    );
+}
+
+
+/* =====================================================
+   NEWSLETTER GLASS CARD
+===================================================== */
+
+.footer-newsletter-card {
+  position: relative;
+
+  align-self: stretch;
+
+  padding:
+    32px;
+
+  border-radius: 28px;
+
+  border:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      0.58
+    );
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(
+        255,
+        255,
+        255,
+        0.45
+      ),
+      rgba(
+        255,
+        255,
+        255,
+        0.15
+      )
+    );
+
+  backdrop-filter:
+    blur(22px);
+
+  -webkit-backdrop-filter:
+    blur(22px);
+
+  box-shadow:
+    inset 0 1px 0
+      rgba(
+        255,
+        255,
+        255,
+        0.72
+      );
+}
+
+.footer-card-label {
+  font-family:
+    Arial,
+    sans-serif;
+
+  font-size: 7px;
+
+  letter-spacing:
+    0.25em;
+
+  opacity: 0.4;
+}
+
+.footer-newsletter-card h3 {
+  margin:
+    50px 0 35px;
+
+  font-family:
+    "Cormorant Garamond",
+    serif;
+
+  font-weight: 400;
+
+  font-size:
+    clamp(
+      38px,
+      4vw,
+      60px
+    );
+
+  line-height: 0.86;
+
+  letter-spacing:
+    -0.035em;
+}
+
+
+/* =====================================================
+   EMAIL
+===================================================== */
+
+.footer-email-form {
+  height: 52px;
+
+  display: flex;
+
+  align-items: center;
+
+  padding:
+    4px 5px 4px 18px;
+
+  border-radius: 999px;
+
+  border:
+    1px solid
+    rgba(
+      40,
+      37,
+      33,
+      0.12
+    );
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.26
+    );
+
+  transition:
+    background 0.35s ease,
+    border-color 0.35s ease;
+}
+
+.footer-email-form:focus-within {
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.48
+    );
+
+  border-color:
+    rgba(
+      40,
+      37,
+      33,
+      0.2
+    );
+}
+
+.footer-email-form input {
+  flex: 1;
+
+  min-width: 0;
+
+  border: 0;
+
+  outline: 0;
+
+  background: transparent;
+
+  font-family:
+    Arial,
+    sans-serif;
+
+  font-size: 9px;
+
+  color:
+    #282521;
+}
+
+.footer-email-form input::placeholder {
+  color:
+    rgba(
+      40,
+      37,
+      33,
+      0.4
+    );
+}
+
+.footer-email-form button {
+  width: 42px;
+  height: 42px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border: 0;
+
+  border-radius: 50%;
+
+  background:
+    rgba(
+      40,
+      37,
+      33,
+      0.92
+    );
+
+  color:
+    #f4f0e8;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.35s
+      cubic-bezier(
+        0.22,
+        1,
+        0.36,
+        1
+      );
+}
+
+.footer-email-form button:hover {
+  transform:
+    rotate(45deg);
+}
+
+.footer-form-note {
+  display: block;
+
+  margin-top: 13px;
+
+  font-family:
+    Arial,
+    sans-serif;
+
+  font-size: 6px;
+
+  line-height: 1.5;
+
+  opacity: 0.38;
+}
+
+
+/* =====================================================
+   WORDMARK
+===================================================== */
+
+.footer-wordmark-wrap {
+display: none;
+}
+
+.footer-wordmark-top {
+  display: grid;
+
+  grid-template-columns:
+    1fr
+    1fr
+    1fr;
+
+  align-items: center;
+
+  padding-bottom: 14px;
+
+  border-bottom:
+    1px solid
+    rgba(
+      40,
+      37,
+      33,
+      0.1
+    );
+
+  font-family:
+    Arial,
+    sans-serif;
+
+  font-size: 6px;
+
+  letter-spacing:
+    0.25em;
+
+  opacity: 0.42;
+}
+
+.footer-wordmark-top span:nth-child(2) {
+  text-align: center;
+}
+
+.footer-back-top {
+  justify-self: end;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 9px;
+
+  border: 0;
+
+  background: transparent;
+
+  color:
+    #282521;
+
+  font-family:
+    Arial,
+    sans-serif;
+
+  font-size: 6px;
+
+  letter-spacing:
+    0.2em;
+
+  cursor: pointer;
+
+  opacity: 0.55;
+
+  transition:
+    opacity 0.3s ease;
+}
+
+.footer-back-top:hover {
+  opacity: 1;
+}
+
+.footer-back-icon {
+  width: 27px;
+  height: 27px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border:
+    1px solid
+    rgba(
+      40,
+      37,
+      33,
+      0.15
+    );
+
+  border-radius: 50%;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.22
+    );
+}
+
+.footer-wordmark {
+  margin-top: 15px;
+
+  font-family:
+    "Cormorant Garamond",
+    "Times New Roman",
+    serif;
+
+  font-size:
+    clamp(
+      100px,
+      20vw,
+      300px
+    );
+
+  font-weight: 400;
+
+  line-height: 0.67;
+
+  letter-spacing:
+    -0.085em;
+
+  text-align: center;
+
+  white-space: nowrap;
+
+  color:
+    rgba(
+      40,
+      37,
+      33,
+      0.88
+    );
+}
+
+
+/* =====================================================
+   NAVIGATION GLASS
+===================================================== */
+
+.footer-navigation-glass {
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, 1fr);
+
+  gap: 15px;
+
+
+  padding: 25px;
+
+  border:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      0.5
+    );
+
+  border-radius: 26px;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.19
+    );
+
+  backdrop-filter:
+    blur(18px);
+
+  -webkit-backdrop-filter:
+    blur(18px);
+
+  box-shadow:
+    inset 0 1px 0
+      rgba(
+        255,
+        255,
+        255,
+        0.62
+      );
+}
+
+
+/* =====================================================
+   LINK GROUP
+===================================================== */
+
+.footer-link-group {
+  min-height: 190px;
+
+  padding:
+    8px 20px;
+
+  border-left:
+    1px solid
+    rgba(
+      40,
+      37,
+      33,
+      0.08
+    );
+}
+
+.footer-link-group:first-child {
+  border-left: 0;
+}
+
+.footer-link-title {
+  display: block;
+
+  margin-bottom: 22px;
+
+  font-family:
+    Arial,
+    sans-serif;
+
+  font-size: 6px;
+
+  letter-spacing:
+    0.25em;
+
+  text-transform: uppercase;
+
+  opacity: 0.38;
+}
+
+.footer-link-list {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 12px;
+}
+
+.footer-link-list a {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  max-width: 170px;
+
+  color:
+    rgba(
+      40,
+      37,
+      33,
+      0.68
+    );
+
+  text-decoration: none;
+
+  font-family:
+    Arial,
+    sans-serif;
+
+  font-size: 8px;
+
+  transition:
+    color 0.3s ease,
+    transform 0.3s ease;
+}
+
+.footer-link-list a svg {
+  opacity: 0;
+
+  transform:
+    translate(
+      -5px,
+      4px
+    );
+
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
+}
+
+.footer-link-list a:hover {
+  color:
+    #282521;
+
+  transform:
+    translateX(4px);
+}
+
+.footer-link-list a:hover svg {
+  opacity: 0.65;
+
+  transform:
+    translate(
+      0,
+      0
+    );
+}
+
+
+/* =====================================================
+   SOCIAL
+===================================================== */
+
+.footer-social-list {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 11px;
+}
+
+.footer-social-list a {
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  color:
+    rgba(
+      40,
+      37,
+      33,
+      0.68
+    );
+
+  text-decoration: none;
+
+  font-family:
+    Arial,
+    sans-serif;
+
+  font-size: 8px;
+
+  transition:
+    transform 0.3s ease,
+    color 0.3s ease;
+}
+
+.footer-social-list a:hover {
+  transform:
+    translateX(4px);
+
+  color:
+    #282521;
+}
+
+.social-circle {
+  width: 28px;
+  height: 28px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border:
+    1px solid
+    rgba(
+      40,
+      37,
+      33,
+      0.13
+    );
+
+  border-radius: 50%;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.24
+    );
+
+  font-size: 6px;
+
+  letter-spacing:
+    0.04em;
+
+  transition:
+    background 0.3s ease,
+    transform 0.3s ease;
+}
+
+.footer-social-list a:hover
+  .social-circle {
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.58
+    );
+
+  transform:
+    translateY(-2px);
+}
+
+
+/* =====================================================
+   BOTTOM
+===================================================== */
+
+.footer-bottom {
+  display: grid;
+
+  grid-template-columns:
+    1fr
+    1fr
+    1fr;
+
+  padding:
+    25px 5px 0;
+
+  font-family:
+    Arial,
+    sans-serif;
+
+  font-size: 6px;
+
+  letter-spacing:
+    0.18em;
+
+  color:
+    rgba(
+      40,
+      37,
+      33,
+      0.35
+    );
+}
+
+.footer-bottom span:nth-child(2) {
+  text-align: center;
+}
+
+.footer-bottom span:last-child {
+  text-align: right;
+}
+
+
+/* =====================================================
+   TABLET
+===================================================== */
+
+@media (max-width: 900px) {
+
+  .footer-glass {
+    padding: 38px;
+  }
+
+  .footer-top {
+    grid-template-columns:
+      1fr;
+
+    gap: 35px;
+  }
+
+  .footer-newsletter-card {
+    max-width: 520px;
+  }
+
+  .footer-navigation-glass {
+    grid-template-columns:
+      repeat(2, 1fr);
+  }
+
+  .footer-link-group:nth-child(3) {
+    border-left: 0;
+  }
+
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 600px) {
+
+  .liquid-footer {
+    padding:
+      45px 12px 12px;
+  }
+
+  .footer-glass {
+    padding:
+      25px 16px;
+
+    border-radius: 28px;
+  }
+
+  .footer-top {
+    gap: 25px;
+  }
+
+  .footer-brand-block {
+    padding:
+      15px 8px;
+  }
+
+  .footer-brand-block h2 {
+    font-size:
+      65px;
+  }
+
+  .footer-brand-block p {
+    max-width: 280px;
+
+    margin-top: 25px;
+  }
+
+  .footer-newsletter-card {
+    padding: 24px;
+
+    border-radius: 22px;
+  }
+
+  .footer-newsletter-card h3 {
+    margin:
+      35px 0 25px;
+
+    font-size: 43px;
+  }
+
+  .footer-wordmark-wrap {
+    margin-top: 65px;
+  }
+
+  .footer-wordmark-top {
+    grid-template-columns:
+      1fr
+      1fr;
+  }
+
+  .footer-wordmark-top span:nth-child(2) {
+    text-align: right;
+  }
+
+  .footer-back-top {
+    display: none;
+  }
+
+  .footer-wordmark {
+    margin-top: 20px;
+
+    font-size:
+      23vw;
+  }
+
+  .footer-navigation-glass {
+    grid-template-columns:
+      1fr 1fr;
+
+    gap: 0;
+
+    margin-top: 55px;
+
+    padding: 10px;
+
+    border-radius: 21px;
+  }
+
+  .footer-link-group {
+    min-height: 180px;
+
+    padding:
+      18px 12px;
+
+    border-left: 0;
+
+    border-top:
+      1px solid
+      rgba(
+        40,
+        37,
+        33,
+        0.07
+      );
+  }
+
+  .footer-link-group:nth-child(1),
+  .footer-link-group:nth-child(2) {
+    border-top: 0;
+  }
+
+  .footer-bottom {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 12px;
+
+    padding:
+      22px 5px 5px;
+  }
+
+  .footer-bottom span:nth-child(2),
+  .footer-bottom span:last-child {
+    text-align: left;
+  }
+
+}
+
+
+/* =====================================================
+   REDUCED MOTION
+===================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .footer-email-form,
+  .footer-email-form button,
+  .footer-link-list a,
+  .footer-social-list a,
+  .social-circle {
+    transition: none;
+  }
+
+}

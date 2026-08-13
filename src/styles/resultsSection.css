@@ -1,0 +1,796 @@
+/* =========================================================
+   SECTION 06 — RESULTS
+========================================================= */
+
+.results-section {
+  position: relative;
+
+  width: 100%;
+
+  min-height: 100svh;
+
+  box-sizing: border-box;
+
+  padding:
+    30px
+    5vw
+    60px;
+
+  background: #eee9df;
+
+  color: #292622;
+
+  overflow: hidden;
+}
+
+
+/* =========================================================
+   TOP BAR
+========================================================= */
+
+.results-topbar {
+  display: grid;
+
+  grid-template-columns:
+    1fr
+    1fr
+    1fr;
+
+  align-items: center;
+
+  padding-bottom: 20px;
+
+  border-bottom:
+    1px solid
+    rgba(41, 38, 34, 0.15);
+
+  font-family:
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+
+  font-size: 7px;
+
+  letter-spacing: 0.28em;
+
+  text-transform: uppercase;
+
+  color:
+    rgba(41, 38, 34, 0.46);
+}
+
+.results-topbar span:nth-child(2) {
+  text-align: center;
+}
+
+.results-topbar span:last-child {
+  text-align: right;
+}
+
+
+/* =========================================================
+   INTRO
+========================================================= */
+
+.results-intro {
+  display: grid;
+
+  grid-template-columns:
+    1.2fr
+    0.8fr;
+
+  gap: 8vw;
+
+  padding:
+    8vh
+    3vw
+    6vh;
+}
+
+
+/* =========================================================
+   TITLE
+========================================================= */
+
+.results-eyebrow {
+  display: block;
+
+  margin-bottom: 22px;
+
+  font-family:
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+
+  font-size: 8px;
+
+  letter-spacing: 0.3em;
+
+  color:
+    rgba(41, 38, 34, 0.45);
+}
+
+
+.results-title h2 {
+  margin: 0;
+
+  font-family:
+    "Cormorant Garamond",
+    "Times New Roman",
+    serif;
+
+  font-size:60px;
+
+  font-weight: 400;
+
+  line-height: 0.79;
+
+  letter-spacing: -0.065em;
+}
+
+
+/* =========================================================
+   DESCRIPTION
+========================================================= */
+
+.results-description {
+  align-self: end;
+
+  max-width: 320px;
+
+  padding-bottom: 5px;
+}
+
+
+.results-description p {
+  margin: 0;
+
+  font-family:
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+
+  font-size: 12px;
+
+  line-height: 1.7;
+
+  color:
+    rgba(41, 38, 34, 0.62);
+}
+
+
+.results-line {
+  width: 90px;
+
+  height: 1px;
+
+  margin:
+    26px 0
+    17px;
+
+  background:
+    rgba(41, 38, 34, 0.4);
+}
+
+
+.results-description span {
+  font-family:
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+
+  font-size: 7px;
+
+  line-height: 1.7;
+
+  letter-spacing: 0.23em;
+
+  color:
+    rgba(41, 38, 34, 0.4);
+}
+
+
+/* =========================================================
+   COMPARISON
+========================================================= */
+
+.results-comparison {
+  position: relative;
+
+  width: calc(100% - 6vw);
+
+  margin:
+    0
+    3vw;
+
+  aspect-ratio: 1.72 / 1;
+
+  overflow: hidden;
+
+  background: #dcd5c9;
+
+  cursor: ew-resize;
+
+  touch-action: none;
+
+  user-select: none;
+}
+
+
+/* =========================================================
+   IMAGE BASE
+========================================================= */
+
+.results-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+
+.results-image img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center;
+}
+.results-after {
+  z-index: 1;
+}
+.results-before {
+  position: absolute;
+
+  top: 0;
+  left: 0;
+
+  height: 100%;
+
+  z-index: 2;
+
+  overflow: hidden;
+}
+
+
+.results-before .results-image {
+  width: calc(
+    100vw - 10vw
+  );
+
+  max-width: none;
+}
+
+
+/* =========================================================
+   IMAGE LABELS
+========================================================= */
+
+.results-image-label {
+  position: absolute;
+
+  bottom: 22px;
+
+  z-index: 5;
+
+  padding:
+    9px
+    13px;
+
+  background:
+    rgba(
+      239,
+      234,
+      224,
+      0.84
+    );
+
+  backdrop-filter: blur(8px);
+
+  font-family:
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+
+  font-size: 6px;
+
+  letter-spacing: 0.25em;
+}
+
+
+.results-before .results-image-label {
+  left: 22px;
+}
+
+
+.results-after .results-image-label {
+  right: 22px;
+}
+
+
+/* =========================================================
+   HANDLE
+========================================================= */
+
+.results-handle {
+  position: absolute;
+
+  top: 0;
+
+  z-index: 10;
+
+  width: 1px;
+
+  height: 100%;
+
+  padding: 0;
+
+  border: none;
+
+  background: transparent;
+
+  transform:
+    translateX(-50%);
+
+  cursor: ew-resize;
+}
+
+
+.handle-line {
+  display: block;
+
+  width: 1px;
+
+  height: 100%;
+
+  background:
+    rgba(
+      255,
+      252,
+      245,
+      0.9
+    );
+
+  box-shadow:
+    0 0 10px
+    rgba(0, 0, 0, 0.12);
+}
+
+
+.handle-circle {
+  position: absolute;
+
+  top: 50%;
+  left: 50%;
+
+  transform:
+    translate(-50%, -50%);
+
+  width: 48px;
+  height: 48px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 4px;
+
+  border-radius: 50%;
+
+  background:
+    rgba(
+      239,
+      234,
+      224,
+      0.94
+    );
+
+  box-shadow:
+    0 8px 25px
+    rgba(0, 0, 0, 0.12);
+
+  color: #292622;
+
+  font-family:
+    Arial,
+    sans-serif;
+
+  font-size: 10px;
+
+  transition:
+    transform 0.25s ease;
+}
+
+
+.results-handle:hover
+.handle-circle {
+  transform:
+    translate(-50%, -50%)
+    scale(1.08);
+}
+
+
+/* =========================================================
+   DRAGGING
+========================================================= */
+
+.results-comparison.is-dragging {
+  cursor: grabbing;
+}
+
+
+.results-comparison.is-dragging
+.handle-circle {
+  transform:
+    translate(-50%, -50%)
+    scale(1.1);
+}
+
+
+/* =========================================================
+   DETAILS
+========================================================= */
+
+.results-details {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  margin:
+    5vh
+    3vw
+    0;
+
+  border-top:
+    1px solid
+    rgba(41, 38, 34, 0.16);
+
+  border-bottom:
+    1px solid
+    rgba(41, 38, 34, 0.16);
+}
+
+
+.results-detail {
+  display: grid;
+
+  grid-template-columns:
+    35px
+    1fr;
+
+  gap: 10px;
+
+  min-height: 100px;
+
+  padding:
+    20px
+    18px;
+
+  box-sizing: border-box;
+}
+
+
+.results-detail + .results-detail {
+  border-left:
+    1px solid
+    rgba(41, 38, 34, 0.16);
+}
+
+
+.result-number {
+  font-family:
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+
+  font-size: 7px;
+
+  letter-spacing: 0.2em;
+
+  color:
+    rgba(41, 38, 34, 0.4);
+}
+
+
+.results-detail strong {
+  display: block;
+
+  margin-bottom: 8px;
+
+  font-family:
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+
+  font-size: 7px;
+
+  font-weight: 500;
+
+  letter-spacing: 0.22em;
+}
+
+
+.results-detail p {
+  max-width: 220px;
+
+  margin: 0;
+
+  font-family:
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+
+  font-size: 9px;
+
+  line-height: 1.6;
+
+  color:
+    rgba(41, 38, 34, 0.5);
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.results-footer {
+  display: grid;
+
+  grid-template-columns:
+    0.5fr
+    1fr
+    0.8fr;
+
+  align-items: end;
+
+  margin:
+    5vh
+    3vw
+    0;
+
+  padding-top: 22px;
+}
+
+
+.results-footer span {
+  font-family:
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+
+  font-size: 6px;
+
+  letter-spacing: 0.25em;
+
+  color:
+    rgba(41, 38, 34, 0.38);
+}
+
+
+.results-footer span:last-child {
+  text-align: right;
+}
+
+
+.results-footer p {
+  margin: 0;
+
+  font-family:
+    "Cormorant Garamond",
+    "Times New Roman",
+    serif;
+
+  font-size: 26px;
+
+  line-height: 0.95;
+
+  letter-spacing: -0.025em;
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 900px) {
+
+  .results-intro {
+    grid-template-columns:
+      1fr
+      0.65fr;
+  }
+
+  .results-title h2 {
+    font-size: 82px;
+  }
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 700px) {
+
+  .results-section {
+    padding:
+      22px
+      20px
+      45px;
+  }
+
+
+  /* TOP */
+
+  .results-topbar {
+    grid-template-columns:
+      1fr
+      1fr;
+
+    font-size: 6px;
+
+    padding-bottom: 16px;
+  }
+
+  .results-topbar span:nth-child(2) {
+    text-align: right;
+  }
+
+  .results-topbar span:last-child {
+    display: none;
+  }
+
+
+  /* INTRO */
+
+  .results-intro {
+    display: block;
+
+    padding:
+      60px
+      0
+      45px;
+  }
+
+
+  .results-eyebrow {
+    margin-bottom: 18px;
+  }
+
+
+  .results-title h2 {
+    font-size:
+      clamp(
+        58px,
+        16vw,
+        82px
+      );
+
+    line-height: 0.82;
+  }
+
+
+  .results-description {
+    margin-top: 38px;
+
+    max-width: 280px;
+  }
+
+
+  .results-description p {
+    font-size: 11px;
+  }
+
+
+  /* COMPARISON */
+
+  .results-comparison {
+    width: 100%;
+
+    margin: 0;
+
+    aspect-ratio: 0.88 / 1;
+  }
+
+
+  .results-before .results-image {
+    width: 100vw;
+  }
+
+
+  .results-image img {
+    object-position: center;
+  }
+
+
+  .results-image-label {
+    bottom: 15px;
+
+    padding:
+      8px
+      10px;
+
+    font-size: 5px;
+  }
+
+
+  .results-before .results-image-label {
+    left: 15px;
+  }
+
+
+  .results-after .results-image-label {
+    right: 15px;
+  }
+
+
+  .handle-circle {
+    width: 42px;
+    height: 42px;
+
+    font-size: 9px;
+  }
+
+
+  /* DETAILS */
+
+  .results-details {
+    display: block;
+
+    margin:
+      40px
+      0
+      0;
+  }
+
+
+  .results-detail {
+    min-height: auto;
+
+    padding:
+      18px
+      8px;
+  }
+
+
+  .results-detail + .results-detail {
+    border-left: none;
+
+    border-top:
+      1px solid
+      rgba(41, 38, 34, 0.16);
+  }
+
+
+  /* FOOTER */
+
+  .results-footer {
+    display: block;
+
+    margin:
+      50px
+      0
+      0;
+
+    padding-top: 20px;
+  }
+
+
+  .results-footer p {
+    margin:
+      22px
+      0;
+
+    font-size: 25px;
+  }
+
+
+  .results-footer span:last-child {
+    text-align: left;
+  }
+
+}

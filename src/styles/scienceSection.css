@@ -1,0 +1,600 @@
+/* =========================================================
+   FORMULATION SECTION
+========================================================= */
+
+.formulation-section {
+  position: relative;
+
+  width: 100%;
+  min-height: 100svh;
+
+  padding:
+    30px
+    5vw
+    34px;
+
+  box-sizing: border-box;
+
+  background: #eee9df;
+
+  color: #292622;
+
+  overflow: hidden;
+}
+
+
+/* =========================================================
+   TOP BAR
+========================================================= */
+
+.formulation-top {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    1fr
+    1fr
+    1fr;
+
+  align-items: center;
+
+  font-family:
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+
+  font-size: 7px;
+
+  letter-spacing: 0.28em;
+
+  text-transform: uppercase;
+
+  color: rgba(
+    41,
+    38,
+    34,
+    0.48
+  );
+
+  padding-bottom: 22px;
+
+  border-bottom:
+    1px solid
+    rgba(
+      41,
+      38,
+      34,
+      0.14
+    );
+}
+
+.formulation-top span:nth-child(2) {
+  text-align: center;
+}
+
+.formulation-top span:last-child {
+  text-align: right;
+}
+
+
+/* =========================================================
+   MAIN
+========================================================= */
+
+.formulation-main {
+  display: grid;
+
+  grid-template-columns:
+    0.9fr
+    1.1fr;
+
+  gap: 7vw;
+
+  align-items: center;
+
+  min-height: 67vh;
+
+  padding:
+    5vh
+    4vw
+    4vh
+    3vw;
+}
+
+
+/* =========================================================
+   LEFT COPY
+========================================================= */
+
+.formulation-copy {
+  max-width: 520px;
+}
+
+.formulation-eyebrow {
+  margin-bottom: 24px;
+
+  font-family:
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+
+  font-size: 8px;
+
+  letter-spacing: 0.3em;
+
+  color: rgba(
+    41,
+    38,
+    34,
+    0.48
+  );
+}
+
+
+.formulation-copy h2 {
+  margin: 0;
+
+  font-family:
+    "Cormorant Garamond",
+    "Times New Roman",
+    serif;
+
+  font-size:
+    clamp(
+      54px,
+      6vw,
+      94px
+    );
+
+  font-weight: 400;
+
+  line-height: 0.82;
+
+  letter-spacing: -0.055em;
+
+  color: #292622;
+}
+
+
+.formulation-rule {
+  width: 125px;
+
+  height: 1px;
+
+  margin-top: 34px;
+
+  background:
+    rgba(
+      41,
+      38,
+      34,
+      0.5
+    );
+}
+
+
+.formulation-copy p {
+  max-width: 360px;
+
+  margin:
+    22px 0 0;
+
+  font-family:
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+
+  font-size: 11px;
+
+  line-height: 1.7;
+
+  color:
+    rgba(
+      41,
+      38,
+      34,
+      0.65
+    );
+}
+
+
+.formulation-copy .formulation-small {
+  margin-top: 9px;
+
+  font-size: 9px;
+
+  color:
+    rgba(
+      41,
+      38,
+      34,
+      0.42
+    );
+}
+
+
+/* =========================================================
+   IMAGE
+========================================================= */
+
+.formulation-visual {
+  width: 100%;
+
+  max-width: 690px;
+
+  justify-self: end;
+}
+
+
+.formulation-image {
+  position: relative;
+
+  width: 100%;
+
+  aspect-ratio: 1.12 / 1;
+
+  overflow: hidden;
+
+  background: #ded7ca;
+}
+
+
+.formulation-image img {
+  width: 100%;
+  height: 100%;
+
+  display: block;
+
+  object-fit: cover;
+
+  object-position: center;
+
+  filter:
+    saturate(0.82)
+    contrast(0.96);
+}
+
+
+/* =========================================================
+   IMAGE CAPTION
+========================================================= */
+
+.formulation-image-caption {
+  display: flex;
+
+  justify-content: space-between;
+
+  margin-top: 11px;
+
+  padding-top: 10px;
+
+  border-top:
+    1px solid
+    rgba(
+      41,
+      38,
+      34,
+      0.16
+    );
+
+  font-family:
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+
+  font-size: 6px;
+
+  letter-spacing: 0.25em;
+
+  color:
+    rgba(
+      41,
+      38,
+      34,
+      0.46
+    );
+}
+
+
+/* =========================================================
+   INGREDIENT LIST
+========================================================= */
+
+.ingredient-list {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  width: 100%;
+
+  border-top:
+    1px solid
+    rgba(
+      41,
+      38,
+      34,
+      0.16
+    );
+
+  border-bottom:
+    1px solid
+    rgba(
+      41,
+      38,
+      34,
+      0.16
+    );
+}
+
+
+.ingredient-item {
+  min-height: 86px;
+
+  padding:
+    20px
+    25px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 22px;
+
+  box-sizing: border-box;
+}
+
+
+.ingredient-item + .ingredient-item {
+  border-left:
+    1px solid
+    rgba(
+      41,
+      38,
+      34,
+      0.16
+    );
+}
+
+
+.ingredient-number {
+  font-family:
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+
+  font-size: 7px;
+
+  letter-spacing: 0.18em;
+
+  color:
+    rgba(
+      41,
+      38,
+      34,
+      0.4
+    );
+}
+
+
+.ingredient-name {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 6px;
+}
+
+
+.ingredient-name strong {
+  font-family:
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+
+  font-size: 8px;
+
+  font-weight: 500;
+
+  letter-spacing: 0.18em;
+}
+
+
+.ingredient-name span {
+  font-family:
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+
+  font-size: 8px;
+
+  color:
+    rgba(
+      41,
+      38,
+      34,
+      0.45
+    );
+}
+
+
+.ingredient-arrow {
+  margin-left: auto;
+
+  font-size: 14px;
+
+  font-weight: 300;
+
+  color:
+    rgba(
+      41,
+      38,
+      34,
+      0.5
+    );
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.formulation-footer {
+  display: flex;
+
+  justify-content: space-between;
+
+  padding-top: 18px;
+
+  font-family:
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+
+  font-size: 6px;
+
+  letter-spacing: 0.3em;
+
+  color:
+    rgba(
+      41,
+      38,
+      34,
+      0.32
+    );
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+
+  .formulation-section {
+    min-height: auto;
+
+    padding:
+      22px
+      20px
+      25px;
+  }
+
+
+  .formulation-top {
+    font-size: 6px;
+
+    padding-bottom: 17px;
+  }
+
+  .formulation-top span:last-child {
+    display: none;
+  }
+
+
+  .formulation-top {
+    grid-template-columns:
+      1fr
+      1fr;
+  }
+
+  .formulation-top span:nth-child(2) {
+    text-align: right;
+  }
+
+
+  .formulation-main {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 40px;
+
+    min-height: auto;
+
+    padding:
+      55px
+      0
+      45px;
+  }
+
+
+  .formulation-copy {
+    width: 100%;
+  }
+
+
+  .formulation-eyebrow {
+    margin-bottom: 18px;
+  }
+
+
+  .formulation-copy h2 {
+    font-size:
+      clamp(
+        48px,
+        14vw,
+        72px
+      );
+
+    line-height: 0.84;
+  }
+
+
+  .formulation-rule {
+    margin-top: 27px;
+  }
+
+
+  .formulation-copy p {
+    max-width: 290px;
+
+    font-size: 10px;
+  }
+
+
+  .formulation-visual {
+    width: 100%;
+  }
+
+
+  .formulation-image {
+    aspect-ratio: 1 / 1.05;
+  }
+
+
+  .ingredient-list {
+    display: block;
+  }
+
+
+  .ingredient-item {
+    min-height: 72px;
+
+    padding:
+      16px
+      10px;
+  }
+
+
+  .ingredient-item + .ingredient-item {
+    border-left: none;
+
+    border-top:
+      1px solid
+      rgba(
+        41,
+        38,
+        34,
+        0.16
+      );
+  }
+
+
+  .formulation-footer {
+    font-size: 5px;
+
+    padding-top: 16px;
+  }
+}

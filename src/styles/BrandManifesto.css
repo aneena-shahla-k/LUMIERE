@@ -1,0 +1,598 @@
+/* =========================================================
+   BRAND MANIFESTO — PREMIUM EDITORIAL
+   STATIC / NO FRAMER MOTION
+========================================================= */
+
+.brand-manifesto {
+  position: relative;
+
+  width: 100%;
+
+  min-height: 100svh;
+
+  background: #eee9df;
+
+  color: #27231f;
+
+  padding:
+    100px 0 80px;
+
+  overflow: hidden;
+}
+
+
+/* =========================================================
+   CONTENT
+========================================================= */
+
+.brand-manifesto__content {
+  position: relative;
+
+  z-index: 5;
+
+  margin-left: 8vw;
+
+  width: 43vw;
+
+  max-width: 610px;
+
+  padding-top: 15vh;
+}
+
+
+/* =========================================================
+   EYEBROW
+========================================================= */
+
+.brand-manifesto__eyebrow {
+  margin-bottom: 22px;
+
+  font-family:
+    "Helvetica Neue",
+    Helvetica,
+    Arial,
+    sans-serif;
+
+  font-size: 9px;
+
+  font-weight: 400;
+
+  letter-spacing: 0.32em;
+
+  text-transform: uppercase;
+
+  color: rgba(39, 35, 31, 0.55);
+}
+
+
+/* =========================================================
+   HEADLINE
+========================================================= */
+
+.brand-manifesto__content h2 {
+  margin: 0;
+
+  max-width: 600px;
+
+  font-family:
+    "Cormorant Garamond",
+    "Times New Roman",
+    serif;
+
+  font-size: clamp(
+    58px,
+    6.1vw,
+    104px
+  );
+
+  font-weight: 400;
+
+  line-height: 0.82;
+
+  letter-spacing: -0.055em;
+
+  color: #292521;
+}
+
+
+/* =========================================================
+   DIVIDER
+========================================================= */
+
+.brand-manifesto__line {
+  width: 125px;
+
+  height: 1px;
+
+  margin-top: 34px;
+
+  overflow: hidden;
+
+  background: rgba(39, 35, 31, 0.16);
+}
+
+
+.brand-manifesto__line div {
+  width: 100%;
+
+  height: 100%;
+
+  background: #292521;
+}
+
+
+/* =========================================================
+   BODY
+========================================================= */
+
+.brand-manifesto__content p {
+  width: 330px;
+
+  margin: 24px 0 0;
+
+  font-family:
+    "Helvetica Neue",
+    Helvetica,
+    Arial,
+    sans-serif;
+
+  font-size: 11px;
+
+  line-height: 1.7;
+
+  letter-spacing: 0.005em;
+
+  color: rgba(39, 35, 31, 0.62);
+}
+
+
+/* =========================================================
+   CTA
+========================================================= */
+
+.brand-manifesto__link {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 22px;
+
+  margin-top: 28px;
+
+  padding: 0;
+
+  border: 0;
+
+  background: transparent;
+
+  color: #292521;
+
+  cursor: pointer;
+
+  font-family:
+    "Helvetica Neue",
+    Helvetica,
+    Arial,
+    sans-serif;
+
+  font-size: 8px;
+
+  letter-spacing: 0.22em;
+
+  text-transform: uppercase;
+}
+
+
+.brand-manifesto__link span:last-child {
+  font-size: 16px;
+
+  transition:
+    transform 0.45s cubic-bezier(
+      0.16,
+      1,
+      0.3,
+      1
+    );
+}
+
+
+.brand-manifesto__link:hover
+span:last-child {
+  transform: translateX(8px);
+}
+
+
+/* =========================================================
+   IMAGE
+========================================================= */
+
+.brand-manifesto__image-wrapper {
+  position: absolute;
+
+  z-index: 2;
+
+  right: 7vw;
+
+  top: 15%;
+
+  width: 43vw;
+
+  max-width: 650px;
+
+  height: 84vh;
+
+  overflow: hidden;
+}
+
+
+/* =========================================================
+   IMAGE
+========================================================= */
+
+.brand-manifesto__image {
+  display: block;
+
+  width: 100%;
+
+  height: 100%;
+
+  object-fit: fill;
+
+  object-position: center center;
+
+  transform: scale(1.02);
+}
+
+
+/* =========================================================
+   IMAGE FADE
+========================================================= */
+
+.brand-manifesto__image-overlay {
+  position: absolute;
+
+  inset: 0;
+
+  pointer-events: none;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(238, 233, 223, 0.7) 0%,
+      rgba(238, 233, 223, 0.12) 15%,
+      rgba(238, 233, 223, 0) 35%
+    );
+}
+
+
+/* =========================================================
+   SIDE LABEL
+========================================================= */
+
+.brand-manifesto__side-label {
+  position: absolute;
+
+  z-index: 7;
+
+  right: 3vw;
+
+  top: 50%;
+
+  transform:
+    translateY(-50%)
+    rotate(90deg);
+
+  display: flex;
+
+  gap: 15px;
+
+  font-family:
+    "Helvetica Neue",
+    Helvetica,
+    Arial,
+    sans-serif;
+
+  font-size: 7px;
+
+  letter-spacing: 0.28em;
+
+  text-transform: uppercase;
+
+  color: rgba(39, 35, 31, 0.45);
+}
+
+
+/* =========================================================
+   BOTTOM INFORMATION
+========================================================= */
+
+.brand-manifesto__bottom {
+  position: absolute;
+
+  z-index: 8;
+
+  left: 8vw;
+
+  right: 7vw;
+
+  bottom: 30px;
+
+  display: flex;
+
+  justify-content: space-between;
+
+  font-family:
+    "Helvetica Neue",
+    Helvetica,
+    Arial,
+    sans-serif;
+
+  font-size: 7px;
+
+  letter-spacing: 0.23em;
+
+  text-transform: uppercase;
+
+  color: rgba(39, 35, 31, 0.42);
+}
+
+
+/* =========================================================
+   DESKTOP LARGE
+========================================================= */
+
+@media (min-width: 1600px) {
+
+  .brand-manifesto__content {
+    margin-left: 10vw;
+  }
+
+  .brand-manifesto__image-wrapper {
+    right: 10vw;
+  }
+
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 1100px) {
+
+  .brand-manifesto {
+    min-height: 90svh;
+  }
+
+  .brand-manifesto__content {
+    margin-left: 6vw;
+
+    width: 46vw;
+
+    padding-top: 12vh;
+  }
+
+  .brand-manifesto__content h2 {
+    font-size: 66px;
+  }
+
+  .brand-manifesto__image-wrapper {
+    right: 5vw;
+
+    width: 45vw;
+
+    height: 68vh;
+  }
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+
+  .brand-manifesto {
+
+    min-height: auto;
+
+    padding:
+      50px 0 35px;
+
+    overflow: hidden;
+  }
+
+
+  /* =====================================================
+     IMAGE
+  ===================================================== */
+
+  .brand-manifesto__image-wrapper {
+
+    position: relative;
+
+    top: auto;
+    right: auto;
+
+    width: calc(100% - 36px);
+
+    height: 48vh;
+
+    max-width: none;
+
+    margin:
+      0 18px;
+
+    overflow: hidden;
+  }
+
+
+  .brand-manifesto__image {
+
+    width: 100%;
+
+    height: 100%;
+
+    object-position: center center;
+
+    transform: scale(1.02);
+  }
+
+
+  .brand-manifesto__image-overlay {
+
+    background:
+      linear-gradient(
+        180deg,
+        rgba(238, 233, 223, 0) 45%,
+        rgba(238, 233, 223, 0.1) 60%,
+        rgba(238, 233, 223, 0.88) 96%,
+        rgba(238, 233, 223, 1) 100%
+      );
+  }
+
+
+  /* =====================================================
+     CONTENT
+  ===================================================== */
+
+  .brand-manifesto__content {
+
+    position: relative;
+
+    left: auto;
+    top: auto;
+    bottom: auto;
+
+    width: auto;
+
+    max-width: none;
+
+    margin:
+      -45px 24px 0;
+
+    padding:
+      0;
+
+    z-index: 5;
+  }
+
+
+  /* =====================================================
+     EYEBROW
+  ===================================================== */
+
+  .brand-manifesto__eyebrow {
+
+    margin-bottom: 15px;
+
+    font-size: 7px;
+
+    letter-spacing: 0.3em;
+  }
+
+
+  /* =====================================================
+     HEADLINE
+  ===================================================== */
+
+  .brand-manifesto__content h2 {
+
+    max-width: 340px;
+
+    font-size: clamp(
+      46px,
+      13.5vw,
+      64px
+    );
+
+    line-height: 0.84;
+  }
+
+
+  /* =====================================================
+     DIVIDER
+  ===================================================== */
+
+  .brand-manifesto__line {
+
+    width: 75px;
+
+    margin-top: 20px;
+  }
+
+
+  /* =====================================================
+     BODY
+  ===================================================== */
+
+  .brand-manifesto__content p {
+
+    width: min(
+      290px,
+      80vw
+    );
+
+    margin-top: 17px;
+
+    font-size: 9px;
+
+    line-height: 1.65;
+  }
+
+
+  /* =====================================================
+     CTA
+  ===================================================== */
+
+  .brand-manifesto__link {
+
+    margin-top: 20px;
+
+    font-size: 7px;
+
+    gap: 16px;
+  }
+
+
+  /* =====================================================
+     SIDE LABEL
+  ===================================================== */
+
+  .brand-manifesto__side-label {
+
+    position: absolute;
+
+    right: -8px;
+
+    top: 44%;
+
+    font-size: 6px;
+  }
+
+
+  /* =====================================================
+     BOTTOM
+  ===================================================== */
+
+  .brand-manifesto__bottom {
+
+    position: relative;
+
+    left: auto;
+    right: auto;
+    bottom: auto;
+
+    margin:
+      45px 24px 0;
+
+    font-size: 6px;
+  }
+
+
+  .brand-manifesto__bottom span:last-child {
+    display: none;
+  }
+
+}
