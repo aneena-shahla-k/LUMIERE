@@ -3,9 +3,6 @@ import { motion } from "framer-motion";
 import {
   ArrowUpRight,
   Sparkles,
-  Leaf,
-  FlaskConical,
-  Heart,
 } from "lucide-react";
 import "./OurStory.css";
 import skin from "../../images/skin1.jpg";

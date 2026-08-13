@@ -1,4 +1,5 @@
 import React, {
+  useCallback,
   useEffect,
   useRef,
   useState,
@@ -35,13 +36,14 @@ export default function PremiumHero() {
   const animationFrameRef = useRef(null);
 
   const [loadedFrames, setLoadedFrames] = useState(0);
-  const [failedFrames, setFailedFrames] = useState([]);
-
   const [isReady, setIsReady] = useState(false);
 
   /*
+   * -----------------------------------------
    * SIGNUP POPUP
+   * -----------------------------------------
    */
+
   const [showSignupOffer, setShowSignupOffer] =
     useState(false);
 
@@ -67,7 +69,7 @@ export default function PremiumHero() {
 
   /*
    * -----------------------------------------
-   * PRELOAD ALL 300 FRAMES
+   * PRELOAD ALL FRAMES
    * -----------------------------------------
    */
 
@@ -128,6 +130,7 @@ export default function PremiumHero() {
       /*
        * Load 12 frames at a time.
        */
+
       const BATCH_SIZE = 12;
 
       for (
@@ -167,13 +170,6 @@ export default function PremiumHero() {
             setLoadedFrames(
               (previous) => previous + 1
             );
-          } else {
-            setFailedFrames(
-              (previous) => [
-                ...previous,
-                result.index + 1,
-              ]
-            );
           }
         });
       }
@@ -185,6 +181,7 @@ export default function PremiumHero() {
       /*
        * Store images in exact frame order.
        */
+
       imagesRef.current = results.map(
         (result) => result?.image || null
       );
@@ -192,6 +189,7 @@ export default function PremiumHero() {
       /*
        * PRELOAD COMPLETE
        */
+
       setIsReady(true);
     };
 
@@ -206,15 +204,6 @@ export default function PremiumHero() {
    * -----------------------------------------
    * SHOW SIGNUP OFFER
    * -----------------------------------------
-   *
-   * This runs ONLY after isReady becomes true.
-   *
-   * No sessionStorage.
-   * No cookies.
-   * No localStorage.
-   *
-   * Therefore popup appears every time
-   * the page loads after preload.
    */
 
   useEffect(() => {
@@ -247,67 +236,73 @@ export default function PremiumHero() {
    * -----------------------------------------
    */
 
-  const getValidFrame = (requestedIndex) => {
-    const images = imagesRef.current;
+  const getValidFrame = useCallback(
+    (requestedIndex) => {
+      const images = imagesRef.current;
 
-    if (!images.length) {
+      if (!images.length) {
+        return null;
+      }
+
+      /*
+       * Requested frame
+       */
+
+      const requested =
+        images[requestedIndex];
+
+      if (
+        requested &&
+        requested.complete &&
+        requested.naturalWidth > 0
+      ) {
+        return requested;
+      }
+
+      /*
+       * Search backwards
+       */
+
+      for (
+        let i = requestedIndex - 1;
+        i >= 0;
+        i--
+      ) {
+        const image = images[i];
+
+        if (
+          image &&
+          image.complete &&
+          image.naturalWidth > 0
+        ) {
+          return image;
+        }
+      }
+
+      /*
+       * Search forwards
+       */
+
+      for (
+        let i = requestedIndex + 1;
+        i < images.length;
+        i++
+      ) {
+        const image = images[i];
+
+        if (
+          image &&
+          image.complete &&
+          image.naturalWidth > 0
+        ) {
+          return image;
+        }
+      }
+
       return null;
-    }
-
-    /*
-     * Requested frame
-     */
-    const requested =
-      images[requestedIndex];
-
-    if (
-      requested &&
-      requested.complete &&
-      requested.naturalWidth > 0
-    ) {
-      return requested;
-    }
-
-    /*
-     * Search backwards
-     */
-    for (
-      let i = requestedIndex - 1;
-      i >= 0;
-      i--
-    ) {
-      const image = images[i];
-
-      if (
-        image &&
-        image.complete &&
-        image.naturalWidth > 0
-      ) {
-        return image;
-      }
-    }
-
-    /*
-     * Search forwards
-     */
-    for (
-      let i = requestedIndex + 1;
-      i < images.length;
-      i++
-    ) {
-      const image = images[i];
-
-      if (
-        image &&
-        image.complete &&
-        image.naturalWidth > 0
-      ) {
-        return image;
-      }
-    }
-
-    return null;
-  };
+    },
+    []
+  );
 
   /*
    * -----------------------------------------
@@ -315,135 +310,150 @@ export default function PremiumHero() {
    * -----------------------------------------
    */
 
-  const drawFrame = (frameIndex) => {
-    const canvas = canvasRef.current;
+  const drawFrame = useCallback(
+    (frameIndex) => {
+      const canvas = canvasRef.current;
 
-    if (!canvas) {
-      return;
-    }
+      if (!canvas) {
+        return;
+      }
 
-    const image =
-      getValidFrame(frameIndex);
+      const image =
+        getValidFrame(frameIndex);
 
-    if (!image) {
-      return;
-    }
+      if (!image) {
+        return;
+      }
 
-    const context =
-      canvas.getContext("2d");
+      const context =
+        canvas.getContext("2d");
 
-    if (!context) {
-      return;
-    }
+      if (!context) {
+        return;
+      }
 
-    const rect =
-      canvas.getBoundingClientRect();
+      const rect =
+        canvas.getBoundingClientRect();
 
-    const width = rect.width;
-    const height = rect.height;
+      const width = rect.width;
+      const height = rect.height;
 
-    if (
-      width <= 0 ||
-      height <= 0
-    ) {
-      return;
-    }
+      if (
+        width <= 0 ||
+        height <= 0
+      ) {
+        return;
+      }
 
-    const pixelRatio = Math.min(
-      window.devicePixelRatio || 1,
-      2
-    );
+      /*
+       * -------------------------------------
+       * DEVICE PIXEL RATIO
+       * -------------------------------------
+       */
 
-    const canvasWidth =
-      Math.floor(
-        width * pixelRatio
+      const pixelRatio = Math.min(
+        window.devicePixelRatio || 1,
+        2
       );
 
-    const canvasHeight =
-      Math.floor(
-        height * pixelRatio
+      const canvasWidth =
+        Math.floor(
+          width * pixelRatio
+        );
+
+      const canvasHeight =
+        Math.floor(
+          height * pixelRatio
+        );
+
+      if (
+        canvas.width !== canvasWidth ||
+        canvas.height !== canvasHeight
+      ) {
+        canvas.width = canvasWidth;
+        canvas.height = canvasHeight;
+      }
+
+      context.setTransform(
+        pixelRatio,
+        0,
+        0,
+        pixelRatio,
+        0,
+        0
       );
 
-    if (
-      canvas.width !== canvasWidth ||
-      canvas.height !== canvasHeight
-    ) {
-      canvas.width = canvasWidth;
-      canvas.height = canvasHeight;
-    }
-
-    context.setTransform(
-      pixelRatio,
-      0,
-      0,
-      pixelRatio,
-      0,
-      0
-    );
-
-    context.clearRect(
-      0,
-      0,
-      width,
-      height
-    );
-
-    /*
-     * -------------------------------------
-     * CINEMATIC COVER
-     * -------------------------------------
-     */
-
-    const imageRatio =
-      image.naturalWidth /
-      image.naturalHeight;
-
-    const canvasRatio =
-      width / height;
-
-    let drawWidth;
-    let drawHeight;
-
-    if (imageRatio > canvasRatio) {
-      drawHeight = height;
-      drawWidth =
-        height * imageRatio;
-    } else {
-      drawWidth = width;
-      drawHeight =
-        width / imageRatio;
-    }
-
-    /*
-     * Slight cinematic crop.
-     */
-    const scale = 1.03;
-
-    drawWidth *= scale;
-    drawHeight *= scale;
-
-    const x =
-      (width - drawWidth) / 2;
-
-    const y =
-      (height - drawHeight) / 2;
-
-    /*
-     * Final safety check.
-     */
-    if (
-      image.complete &&
-      image.naturalWidth > 0
-    ) {
-      context.drawImage(
-        image,
-        x,
-        y,
-        drawWidth,
-        drawHeight
+      context.clearRect(
+        0,
+        0,
+        width,
+        height
       );
-    }
-  };
+
+      /*
+       * -------------------------------------
+       * CINEMATIC COVER
+       * -------------------------------------
+       */
+
+      const imageRatio =
+        image.naturalWidth /
+        image.naturalHeight;
+
+      const canvasRatio =
+        width / height;
+
+      let drawWidth;
+      let drawHeight;
+
+      if (imageRatio > canvasRatio) {
+        drawHeight = height;
+
+        drawWidth =
+          height * imageRatio;
+      } else {
+        drawWidth = width;
+
+        drawHeight =
+          width / imageRatio;
+      }
+
+      /*
+       * Slight cinematic crop.
+       */
+
+      const scale = 1.03;
+
+      drawWidth *= scale;
+      drawHeight *= scale;
+
+      const x =
+        (width - drawWidth) / 2;
+
+      const y =
+        (height - drawHeight) / 2;
+
+      /*
+       * -------------------------------------
+       * FINAL SAFETY CHECK
+       * -------------------------------------
+       */
+
+      if (
+        image.complete &&
+        image.naturalWidth > 0
+      ) {
+        context.drawImage(
+          image,
+          x,
+          y,
+          drawWidth,
+          drawHeight
+        );
+      }
+    },
+    [getValidFrame]
+  );
 
   /*
    * -----------------------------------------
@@ -456,10 +466,17 @@ export default function PremiumHero() {
       return;
     }
 
-    requestAnimationFrame(() => {
-      drawFrame(0);
-    });
-  }, [isReady]);
+    const frameRequest =
+      requestAnimationFrame(() => {
+        drawFrame(0);
+      });
+
+    return () => {
+      cancelAnimationFrame(
+        frameRequest
+      );
+    };
+  }, [isReady, drawFrame]);
 
   /*
    * -----------------------------------------
@@ -468,6 +485,10 @@ export default function PremiumHero() {
    */
 
   useEffect(() => {
+    if (!isReady) {
+      return;
+    }
+
     const handleResize = () => {
       drawFrame(
         currentFrameRef.current
@@ -485,7 +506,7 @@ export default function PremiumHero() {
         handleResize
       );
     };
-  }, [isReady]);
+  }, [isReady, drawFrame]);
 
   /*
    * -----------------------------------------
@@ -545,11 +566,14 @@ export default function PremiumHero() {
         cancelAnimationFrame(
           animationFrameRef.current
         );
+
+        animationFrameRef.current = null;
       }
     };
   }, [
     isReady,
     smoothProgress,
+    drawFrame,
   ]);
 
   /*
