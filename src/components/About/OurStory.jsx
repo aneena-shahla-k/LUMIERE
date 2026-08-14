@@ -206,12 +206,6 @@ export default function OurStory() {
         </div>
       </section>
 
-      
-
-      {/* =====================================================
-          FINAL CTA
-      ===================================================== */}
-
       <section className="story-final">
         <div className="story-final__inner">
           <Eyebrow en="DISCOVER LUMIÈRE"  />

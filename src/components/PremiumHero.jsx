@@ -14,7 +14,7 @@ import {
 import "../styles/premiumHero.css";
 import SignupOffer from "./SignupOffer";
 
-const TOTAL_FRAMES = 225;
+const TOTAL_FRAMES = 300;
 
 // Load only these frames before showing the hero
 const INITIAL_FRAMES = 12;
@@ -22,7 +22,7 @@ const INITIAL_FRAMES = 12;
 const getFramePath = (index) => {
   const frameNumber = String(index + 1).padStart(3, "0");
 
-  return `/hero/ezgif-frame-${frameNumber}.webp`;
+  return `/skin-frames/ezgif-frame-${frameNumber}.webp`;
 };
 
 const clamp = (value, min, max) => {
