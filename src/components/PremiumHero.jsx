@@ -16,6 +16,9 @@ import SignupOffer from "./SignupOffer";
 
 const TOTAL_FRAMES = 225;
 
+// Load only these frames before showing the hero
+const INITIAL_FRAMES = 12;
+
 const getFramePath = (index) => {
   const frameNumber = String(index + 1).padStart(3, "0");
 
@@ -69,72 +72,136 @@ export default function PremiumHero() {
 
   /*
    * -----------------------------------------
-   * PRELOAD ALL FRAMES
+   * LOAD SINGLE IMAGE
    * -----------------------------------------
    */
 
-  useEffect(() => {
-    let cancelled = false;
+  const loadImage = useCallback((index) => {
+    return new Promise((resolve) => {
+      const image = new Image();
 
-    const loadImage = (index) => {
-      return new Promise((resolve) => {
-        const image = new Image();
+      const path = getFramePath(index);
 
-        const path = getFramePath(index);
-
-        image.onload = () => {
-          if (cancelled) {
-            resolve(null);
-            return;
-          }
-
-          if (
-            image.naturalWidth > 0 &&
-            image.naturalHeight > 0
-          ) {
-            resolve({
-              index,
-              image,
-              success: true,
-            });
-          } else {
-            resolve({
-              index,
-              image: null,
-              success: false,
-              path,
-            });
-          }
-        };
-
-        image.onerror = () => {
-          console.warn(
-            `Hero frame failed to load: ${path}`
-          );
-
+      image.onload = () => {
+        if (
+          image.naturalWidth > 0 &&
+          image.naturalHeight > 0
+        ) {
+          resolve({
+            index,
+            image,
+            success: true,
+          });
+        } else {
           resolve({
             index,
             image: null,
             success: false,
             path,
           });
-        };
+        }
+      };
 
-        image.src = path;
+      image.onerror = () => {
+        console.warn(
+          `Hero frame failed to load: ${path}`
+        );
+
+        resolve({
+          index,
+          image: null,
+          success: false,
+          path,
+        });
+      };
+
+      image.src = path;
+    });
+  }, []);
+
+  /*
+   * -----------------------------------------
+   * INITIAL FRAME PRELOAD
+   * -----------------------------------------
+   *
+   * First 12 frames load first.
+   * Once they are ready, hero appears.
+   *
+   * -----------------------------------------
+   */
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadInitialFrames = async () => {
+      const initialBatch = [];
+
+      for (
+        let index = 0;
+        index < INITIAL_FRAMES;
+        index++
+      ) {
+        initialBatch.push(
+          loadImage(index)
+        );
+      }
+
+      const results =
+        await Promise.all(initialBatch);
+
+      if (cancelled) {
+        return;
+      }
+
+      results.forEach((result) => {
+        if (!result) {
+          return;
+        }
+
+        imagesRef.current[result.index] =
+          result.image;
+
+        if (result.success) {
+          setLoadedFrames(
+            (previous) =>
+              previous + 1
+          );
+        }
       });
-    };
-
-    const preloadFrames = async () => {
-      const results = new Array(TOTAL_FRAMES);
 
       /*
-       * Load 12 frames at a time.
+       * Hero is ready after
+       * initial frames are loaded.
        */
 
+      setIsReady(true);
+    };
+
+    loadInitialFrames();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [loadImage]);
+
+  /*
+   * -----------------------------------------
+   * BACKGROUND LOAD REMAINING FRAMES
+   * -----------------------------------------
+   */
+
+  useEffect(() => {
+    if (!isReady) {
+      return;
+    }
+
+    let cancelled = false;
+
+    const loadRemainingFrames = async () => {
       const BATCH_SIZE = 12;
 
       for (
-        let start = 0;
+        let start = INITIAL_FRAMES;
         start < TOTAL_FRAMES;
         start += BATCH_SIZE
       ) {
@@ -153,56 +220,61 @@ export default function PremiumHero() {
           );
           index++
         ) {
-          batch.push(loadImage(index));
+          batch.push(
+            loadImage(index)
+          );
         }
 
-        const batchResults =
+        const results =
           await Promise.all(batch);
 
-        batchResults.forEach((result) => {
+        if (cancelled) {
+          return;
+        }
+
+        results.forEach((result) => {
           if (!result) {
             return;
           }
 
-          results[result.index] = result;
+          imagesRef.current[result.index] =
+            result.image;
 
           if (result.success) {
             setLoadedFrames(
-              (previous) => previous + 1
+              (previous) =>
+                previous + 1
             );
           }
         });
+
+        /*
+         * Give the browser
+         * a small breathing room.
+         */
+
+        await new Promise((resolve) => {
+          setTimeout(resolve, 10);
+        });
       }
-
-      if (cancelled) {
-        return;
-      }
-
-      /*
-       * Store images in exact frame order.
-       */
-
-      imagesRef.current = results.map(
-        (result) => result?.image || null
-      );
-
-      /*
-       * PRELOAD COMPLETE
-       */
-
-      setIsReady(true);
     };
 
-    preloadFrames();
+    loadRemainingFrames();
 
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [isReady, loadImage]);
 
   /*
    * -----------------------------------------
-   * SHOW SIGNUP OFFER
+   * SHOW SIGNUP OFFER - FIRST TIME ONLY
+   * -----------------------------------------
+   *
+   * sessionStorage prevents the popup
+   * from appearing again during the
+   * same browser session.
+   *
    * -----------------------------------------
    */
 
@@ -211,8 +283,27 @@ export default function PremiumHero() {
       return;
     }
 
+    const alreadyShown =
+      sessionStorage.getItem(
+        "lumiere_signup_offer_shown"
+      );
+
+    /*
+     * If popup has already been shown,
+     * don't show it again.
+     */
+
+    if (alreadyShown) {
+      return;
+    }
+
     const timer = setTimeout(() => {
       setShowSignupOffer(true);
+
+      sessionStorage.setItem(
+        "lumiere_signup_offer_shown",
+        "true"
+      );
     }, 700);
 
     return () => {
@@ -406,7 +497,9 @@ export default function PremiumHero() {
       let drawWidth;
       let drawHeight;
 
-      if (imageRatio > canvasRatio) {
+      if (
+        imageRatio > canvasRatio
+      ) {
         drawHeight = height;
 
         drawWidth =
@@ -624,7 +717,10 @@ export default function PremiumHero() {
 
                   animate={{
                     width:
-                      `${loadingPercentage}%`,
+                      `${Math.min(
+                        loadingPercentage,
+                        100
+                      )}%`,
                   }}
 
                   transition={{
@@ -635,7 +731,11 @@ export default function PremiumHero() {
               </div>
 
               <span>
-                {loadingPercentage}%
+                {Math.min(
+                  loadingPercentage,
+                  100
+                )}
+                %
               </span>
 
             </div>
@@ -748,10 +848,7 @@ export default function PremiumHero() {
         </div>
       </section>
 
-      {/* =================================================
-          SIGNUP OFFER
-          OUTSIDE HERO SECTION
-      ================================================= */}
+      {/* SIGNUP OFFER */}
 
       {showSignupOffer && (
         <SignupOffer
