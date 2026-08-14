@@ -19,7 +19,7 @@ const TOTAL_FRAMES = 225;
 const getFramePath = (index) => {
   const frameNumber = String(index + 1).padStart(3, "0");
 
-  return `/heeroo-frames/ezgif-frame-${frameNumber}.png`;
+  return `/hero/ezgif-frame-${frameNumber}.webp`;
 };
 
 const clamp = (value, min, max) => {
