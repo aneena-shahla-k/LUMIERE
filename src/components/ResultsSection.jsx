@@ -30,34 +30,11 @@ export default function ResultsSection() {
 
   return (
     <section className="results-section">
-
-      {/* ==================================================
-          TOP BAR
-      ================================================== */}
-
-      <div className="results-topbar">
-
-        <span>06</span>
-
-        <span>THE RESULTS</span>
-
-        <span>VISIBLE CARE</span>
-
-      </div>
-
-
-      {/* ==================================================
-          INTRO
-      ================================================== */}
-
       <div className="results-intro">
-
         <div className="results-title">
-
           <span className="results-eyebrow">
             SKIN, OVER TIME
           </span>
-
           <h2>
             RESULTS
             <br />

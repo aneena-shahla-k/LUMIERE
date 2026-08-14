@@ -804,10 +804,6 @@ export default function PremiumHero() {
             }}
           >
 
-            <span>
-              SCROLL TO EXPLORE
-            </span>
-
             <div className="premium-hero__scroll-line">
 
               <motion.div
@@ -822,29 +818,6 @@ export default function PremiumHero() {
             </div>
 
           </motion.div>
-
-          {/* FRAME COUNTER */}
-
-          <div className="premium-hero__counter">
-
-            <span>
-              {String(
-                currentFrameRef.current + 1
-              ).padStart(3, "0")}
-            </span>
-
-            <span className="premium-hero__counter-divider">
-              /
-            </span>
-
-            <span>
-              {String(
-                TOTAL_FRAMES
-              ).padStart(3, "0")}
-            </span>
-
-          </div>
-
         </div>
       </section>
 

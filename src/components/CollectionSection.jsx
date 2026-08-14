@@ -1,4 +1,6 @@
 import React, { useMemo, useState } from "react";
+import { useCart } from "../context/CartContext";
+import { useWishlist } from "../context/WishlistContext"; // <-- 1. Import useWishlist
 import "../styles/collectionSection.css";
 import img from "../images/serum2.jpg";
 import img1 from "../images/cleanse.jpg";
@@ -73,6 +75,9 @@ const categories = [
 
 export default function CollectionSection() {
   const [activeCategory, setActiveCategory] = useState("ALL");
+  const [addedIds, setAddedIds] = useState([]);
+  const { addToCart } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist(); // <-- 2. Extract wishlist methods
 
   const filteredProducts = useMemo(() => {
     if (activeCategory === "ALL") {
@@ -84,23 +89,35 @@ export default function CollectionSection() {
     );
   }, [activeCategory]);
 
+  /*
+   * =========================================
+   * HANDLE ADD TO CART
+   * =========================================
+   */
+  const handleAddToCart = (product) => {
+    const numericPrice =
+      typeof product.price === "string"
+        ? Number(product.price.replace(/[^0-9.-]+/g, ""))
+        : product.price;
+
+    const formattedProduct = {
+      ...product,
+      price: numericPrice || 0,
+    };
+
+    addToCart(formattedProduct, 1);
+
+    setAddedIds((prev) =>
+      prev.includes(product.id) ? prev : [...prev, product.id]
+    );
+
+    setTimeout(() => {
+      setAddedIds((prev) => prev.filter((id) => id !== product.id));
+    }, 1500);
+  };
+
   return (
     <section className="collection-section">
-
-      {/* ==================================================
-          TOP BAR
-      ================================================== */}
-
-      <div className="collection-topbar">
-
-        <span>05</span>
-
-        <span>THE COLLECTION</span>
-
-        <span>CONSIDERED CARE</span>
-
-      </div>
-
 
       {/* ==================================================
           FLOATING DECORATION
@@ -197,87 +214,99 @@ export default function CollectionSection() {
 
       <div className="collection-grid">
 
-        {filteredProducts.map((product, index) => (
+        {filteredProducts.map((product, index) => {
+          const isAdded = addedIds.includes(product.id);
+          const isFavorited = isInWishlist(product.id);
 
-          <article
-            className={`product-card product-card-${index + 1}`}
-            key={product.id}
-          >
+          return (
+            <article
+              className={`product-card product-card-${index + 1}`}
+              key={product.id}
+            >
 
-            {/* PRODUCT IMAGE */}
+              {/* PRODUCT IMAGE */}
 
-            <div className="product-image-wrap">
+              <div className="product-image-wrap">
 
-              {product.badge && (
-                <span className="product-badge">
-                  {product.badge}
-                </span>
-              )}
+                {product.badge && (
+                  <span className="product-badge">
+                    {product.badge}
+                  </span>
+                )}
 
-              <button
-                className="product-favorite"
-                type="button"
-                aria-label={`Save ${product.name}`}
-              >
-                ♡
-              </button>
-
-              <img
-                src={product.image}
-                alt={product.name}
-                className="product-image"
-              />
-
-              <div className="product-view">
-                VIEW PRODUCT
-                <span>↗</span>
-              </div>
-
-            </div>
-
-
-            {/* PRODUCT INFO */}
-
-            <div className="product-info">
-
-              <div>
-
-                <span className="product-category">
-                  {product.category}
-                </span>
-
-                <h3>
-                  {product.name}
-                </h3>
-
-                <p>
-                  {product.subtitle}
-                </p>
-
-              </div>
-
-
-              <div className="product-buy">
-
-                <span className="product-price">
-                  {product.price}
-                </span>
-
+                {/* 3. Favorite Button connected to WishlistContext */}
                 <button
+                  className={`product-favorite ${
+                    isFavorited ? "product-favorite--active" : ""
+                  }`}
                   type="button"
-                  className="add-button"
+                  onClick={() => toggleWishlist(product)}
+                  aria-label={
+                    isFavorited
+                      ? `Remove ${product.name} from wishlist`
+                      : `Save ${product.name} to wishlist`
+                  }
                 >
-                  ADD TO BAG
-                  <span>+</span>
+                  {isFavorited ? "♥" : "♡"}
                 </button>
 
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  className="product-image"
+                />
+
+                <div className="product-view">
+                  VIEW PRODUCT
+                  <span>↗</span>
+                </div>
+
               </div>
 
-            </div>
 
-          </article>
+              {/* PRODUCT INFO */}
 
-        ))}
+              <div className="product-info">
+
+                <div>
+
+                  <span className="product-category">
+                    {product.category}
+                  </span>
+
+                  <h3>
+                    {product.name}
+                  </h3>
+
+                  <p>
+                    {product.subtitle}
+                  </p>
+
+                </div>
+
+
+                <div className="product-buy">
+
+                  <span className="product-price">
+                    {product.price}
+                  </span>
+
+                  <button
+                    type="button"
+                    className="add-button"
+                    onClick={() => handleAddToCart(product)}
+                  >
+                    {isAdded ? "ADDED" : "ADD TO BAG"}
+                    <span>{isAdded ? "✓" : "+"}</span>
+                  </button>
+
+                </div>
+
+              </div>
+
+            </article>
+          );
+        })}
 
       </div>
 

@@ -34,15 +34,6 @@ const ritualSteps = [
 export default function RitualSection() {
   return (
     <section className="ritual-section">
-
-      {/* TOP LABEL */}
-      <div className="ritual-topbar">
-        <span>04</span>
-        <span>THE RITUAL</span>
-        <span>EVERY DAY, INTENTIONALLY</span>
-      </div>
-
-
       {/* INTRO */}
       <div className="ritual-intro">
 

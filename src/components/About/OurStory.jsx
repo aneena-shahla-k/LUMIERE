@@ -1,17 +1,12 @@
 import React from "react";
 import { motion } from "framer-motion";
-import {
-  ArrowUpRight,
-  Sparkles,
-} from "lucide-react";
+import {ArrowUpRight,Sparkles} from "lucide-react";
 import "./OurStory.css";
 import skin from "../../images/skin1.jpg";
 import land from "../../images/calm3.jpg";
 import not from "../../images/natural.jpg";
 
-/* A simple line-art paisley (kairi/ambi) motif — the page's one signature
-   ornament, reused sparingly as a corner mark, a divider accent and the
-   quote glyph instead of a generic curly quote. */
+
 function Paisley({ className }) {
   return (
     <svg
@@ -43,10 +38,6 @@ function Eyebrow({ en, hi }) {
 export default function OurStory() {
   return (
     <main className="our-story">
-      {/* =====================================================
-          HERO
-      ===================================================== */}
-
       <section className="story-hero">
         <motion.div
           className="story-hero__content"
@@ -56,11 +47,7 @@ export default function OurStory() {
         >
           <Eyebrow en="OUR STORY" hi="हमारी कहानी" />
 
-          <h1>
-            Beauty,
-            <br />
-            handed down,
-            <br />
+          <h1> Beauty,<br />handed down,<br />
             <em>re-imagined.</em>
           </h1>
 
