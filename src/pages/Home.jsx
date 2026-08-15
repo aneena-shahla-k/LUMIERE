@@ -13,10 +13,11 @@ export default function Home() {
     <main className="w-full min-h-screen p-0 m-0 overflow-x-hidden flex flex-col items-stretch justify-start">
       <PremiumHero />
       <BrandManifesto />
+      <CollectionSection />
       {/* <ScienceSection/> */}
       <LumiereEdit />
       <RitualSection />
-      <CollectionSection />
+      
       
       {/* Margin / Padding push avoid cheyyan section lock */}
       <div className="w-full p-0 m-0 block">
