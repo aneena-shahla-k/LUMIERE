@@ -520,11 +520,13 @@
   border-bottom: 1px solid rgba(41, 38, 34, 0.45);
   background: transparent;
   cursor: pointer;
+  text-decoration: none; /* Keeps styling clean when using <Link> or <a> */
   font-family: "Helvetica Neue", Arial, sans-serif;
   font-size: 6px;
   letter-spacing: 0.24em;
   color: #292622;
 }
+
 
 .view-all-button span {
   font-size: 13px;
@@ -757,4 +759,5 @@
   background: var(--shop-dark, #292622);
   color: #fff;
 }
+
 

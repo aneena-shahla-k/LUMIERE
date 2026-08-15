@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
+import { Link } from "react-router-dom"; // <-- Import Link
 import { useCart } from "../context/CartContext";
-import { useWishlist } from "../context/WishlistContext"; // <-- 1. Import useWishlist
+import { useWishlist } from "../context/WishlistContext";
 import "../styles/collectionSection.css";
 import img from "../images/serum2.jpg";
 import img1 from "../images/cleanse.jpg";
@@ -77,7 +78,7 @@ export default function CollectionSection() {
   const [activeCategory, setActiveCategory] = useState("ALL");
   const [addedIds, setAddedIds] = useState([]);
   const { addToCart } = useCart();
-  const { toggleWishlist, isInWishlist } = useWishlist(); // <-- 2. Extract wishlist methods
+  const { toggleWishlist, isInWishlist } = useWishlist();
 
   const filteredProducts = useMemo(() => {
     if (activeCategory === "ALL") {
@@ -89,11 +90,6 @@ export default function CollectionSection() {
     );
   }, [activeCategory]);
 
-  /*
-   * =========================================
-   * HANDLE ADD TO CART
-   * =========================================
-   */
   const handleAddToCart = (product) => {
     const numericPrice =
       typeof product.price === "string"
@@ -118,11 +114,6 @@ export default function CollectionSection() {
 
   return (
     <section className="collection-section">
-
-      {/* ==================================================
-          FLOATING DECORATION
-      ================================================== */}
-
       <div className="collection-orb collection-orb-one" />
       <div className="collection-orb collection-orb-two" />
 
@@ -130,90 +121,37 @@ export default function CollectionSection() {
         ESSENTIAL
       </div>
 
-
-      {/* ==================================================
-          INTRO
-      ================================================== */}
-
       <div className="collection-intro">
-
         <div className="collection-intro-main">
-
           <span className="collection-eyebrow">
             ESSENTIALS
           </span>
-
           <h2>
-            THE
-            <br />
-            COLLECTION.
+            THE<br />COLLECTION.
           </h2>
-
         </div>
-
-
-        <div className="collection-intro-side">
-
-          <p>
-            A focused collection of
-            formulas designed to become
-            part of your everyday ritual.
-          </p>
-
-          <div className="collection-line" />
-
-          <span>
-            SIMPLE FORMULAS.
-            <br />
-            CONSIDERED CARE.
-          </span>
-
-        </div>
-
       </div>
 
-
-      {/* ==================================================
-          CATEGORY NAV
-      ================================================== */}
-
       <div className="collection-nav">
-
         <div className="collection-categories">
-
           {categories.map((category) => (
             <button
               key={category}
               type="button"
-              className={
-                activeCategory === category
-                  ? "active"
-                  : ""
-              }
-              onClick={() =>
-                setActiveCategory(category)
-              }
+              className={activeCategory === category ? "active" : ""}
+              onClick={() => setActiveCategory(category)}
             >
               {category}
             </button>
           ))}
-
         </div>
-
 
         <span className="collection-count">
           {String(filteredProducts.length).padStart(2, "0")} PRODUCTS
         </span>
-
       </div>
 
-
-      {/* ==================================================
-          PRODUCTS
-      ================================================== */}
-
       <div className="collection-grid">
-
         {filteredProducts.map((product, index) => {
           const isAdded = addedIds.includes(product.id);
           const isFavorited = isInWishlist(product.id);
@@ -223,18 +161,13 @@ export default function CollectionSection() {
               className={`product-card product-card-${index + 1}`}
               key={product.id}
             >
-
-              {/* PRODUCT IMAGE */}
-
               <div className="product-image-wrap">
-
                 {product.badge && (
                   <span className="product-badge">
                     {product.badge}
                   </span>
                 )}
 
-                {/* 3. Favorite Button connected to WishlistContext */}
                 <button
                   className={`product-favorite ${
                     isFavorited ? "product-favorite--active" : ""
@@ -260,37 +193,21 @@ export default function CollectionSection() {
                   VIEW PRODUCT
                   <span>↗</span>
                 </div>
-
               </div>
 
-
-              {/* PRODUCT INFO */}
-
               <div className="product-info">
-
                 <div>
-
                   <span className="product-category">
                     {product.category}
                   </span>
-
-                  <h3>
-                    {product.name}
-                  </h3>
-
-                  <p>
-                    {product.subtitle}
-                  </p>
-
+                  <h3>{product.name}</h3>
+                  <p>{product.subtitle}</p>
                 </div>
 
-
                 <div className="product-buy">
-
                   <span className="product-price">
                     {product.price}
                   </span>
-
                   <button
                     type="button"
                     className="add-button"
@@ -299,15 +216,23 @@ export default function CollectionSection() {
                     {isAdded ? "ADDED" : "ADD TO BAG"}
                     <span>{isAdded ? "✓" : "+"}</span>
                   </button>
-
                 </div>
-
               </div>
-
             </article>
           );
         })}
+      </div>
 
+      {/* ==================================================
+          BOTTOM SHOP LINK
+      ================================================== */}
+      <div className="collection-bottom">
+        <span className="collection-bottom-number">EXPLORE</span>
+        <p>EXPLORE THE COMPLETE RANGE</p>
+        <Link to="/shop" className="view-all-button">
+          SHOP ALL PRODUCTS
+          <span>↗</span>
+        </Link>
       </div>
 
     </section>
