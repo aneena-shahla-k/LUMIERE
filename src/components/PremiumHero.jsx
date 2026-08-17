@@ -4,115 +4,107 @@ import React, {
   useRef,
   useState,
 } from "react";
-
-import {
-  motion,
-  useScroll,
-  useSpring,
-} from "framer-motion";
-
+import { motion, useScroll, useSpring } from "framer-motion";
 import "../styles/premiumHero.css";
 import SignupOffer from "./SignupOffer";
 
 const TOTAL_FRAMES = 206;
-
-// Load only these frames before showing the hero
 const INITIAL_FRAMES = 12;
+const NEARBY_FRAMES = 18;
+const BACKGROUND_BATCH = 6;
 
 const getFramePath = (index) => {
   const frameNumber = String(index + 1).padStart(3, "0");
-
   return `/skin-frames/ezgif-frame-${frameNumber}.webp`;
 };
 
-const clamp = (value, min, max) => {
-  return Math.min(Math.max(value, min), max);
-};
+const clamp = (value, min, max) =>
+  Math.min(Math.max(value, min), max);
 
 export default function PremiumHero() {
   const sectionRef = useRef(null);
   const canvasRef = useRef(null);
+  const contextRef = useRef(null);
 
   const imagesRef = useRef([]);
+  const loadingRef = useRef(new Set());
+  const loadedRef = useRef(new Set());
 
   const currentFrameRef = useRef(0);
   const animationFrameRef = useRef(null);
+  const idleCallbackRef = useRef(null);
 
   const [loadedFrames, setLoadedFrames] = useState(0);
   const [isReady, setIsReady] = useState(false);
-
-  /*
-   * -----------------------------------------
-   * SIGNUP POPUP
-   * -----------------------------------------
-   */
-
-  const [showSignupOffer, setShowSignupOffer] =
-    useState(false);
-
-  /*
-   * -----------------------------------------
-   * SCROLL
-   * -----------------------------------------
-   */
+  const [showSignupOffer, setShowSignupOffer] = useState(false);
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start start", "end end"],
   });
 
-  const smoothProgress = useSpring(
-    scrollYProgress,
-    {
-      stiffness: 100,
-      damping: 30,
-      mass: 0.2,
-    }
-  );
+  const smoothProgress = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    mass: 0.2,
+  });
 
   /*
    * -----------------------------------------
-   * LOAD SINGLE IMAGE
+   * LOAD IMAGE
    * -----------------------------------------
    */
 
   const loadImage = useCallback((index) => {
+    if (
+      index < 0 ||
+      index >= TOTAL_FRAMES ||
+      loadedRef.current.has(index) ||
+      loadingRef.current.has(index)
+    ) {
+      return Promise.resolve(null);
+    }
+
+    loadingRef.current.add(index);
+
     return new Promise((resolve) => {
       const image = new Image();
-
       const path = getFramePath(index);
 
-      image.onload = () => {
+      image.decoding = "async";
+
+      image.onload = async () => {
+        try {
+          if (image.decode) {
+            await image.decode();
+          }
+        } catch {
+          // Image can still be usable after decode failure.
+        }
+
+        loadingRef.current.delete(index);
+
         if (
           image.naturalWidth > 0 &&
           image.naturalHeight > 0
         ) {
-          resolve({
-            index,
-            image,
-            success: true,
-          });
-        } else {
-          resolve({
-            index,
-            image: null,
-            success: false,
-            path,
-          });
+          imagesRef.current[index] = image;
+          loadedRef.current.add(index);
+
+          setLoadedFrames(
+            loadedRef.current.size
+          );
+
+          resolve(image);
+          return;
         }
+
+        resolve(null);
       };
 
       image.onerror = () => {
-        console.warn(
-          `Hero frame failed to load: ${path}`
-        );
-
-        resolve({
-          index,
-          image: null,
-          success: false,
-          path,
-        });
+        loadingRef.current.delete(index);
+        resolve(null);
       };
 
       image.src = path;
@@ -121,63 +113,32 @@ export default function PremiumHero() {
 
   /*
    * -----------------------------------------
-   * INITIAL FRAME PRELOAD
-   * -----------------------------------------
-   *
-   * First 12 frames load first.
-   * Once they are ready, hero appears.
-   *
+   * INITIAL PRELOAD
    * -----------------------------------------
    */
 
   useEffect(() => {
     let cancelled = false;
 
-    const loadInitialFrames = async () => {
-      const initialBatch = [];
+    const preloadInitialFrames = async () => {
+      const promises = [];
 
       for (
         let index = 0;
         index < INITIAL_FRAMES;
         index++
       ) {
-        initialBatch.push(
-          loadImage(index)
-        );
+        promises.push(loadImage(index));
       }
 
-      const results =
-        await Promise.all(initialBatch);
+      await Promise.all(promises);
 
-      if (cancelled) {
-        return;
-      }
-
-      results.forEach((result) => {
-        if (!result) {
-          return;
-        }
-
-        imagesRef.current[result.index] =
-          result.image;
-
-        if (result.success) {
-          setLoadedFrames(
-            (previous) =>
-              previous + 1
-          );
-        }
-      });
-
-      /*
-       * Hero is ready after
-       * initial frames are loaded.
-       */
+      if (cancelled) return;
 
       setIsReady(true);
     };
 
-    loadInitialFrames();
+    preloadInitialFrames();
 
     return () => {
       cancelled = true;
@@ -186,158 +147,33 @@ export default function PremiumHero() {
 
   /*
    * -----------------------------------------
-   * BACKGROUND LOAD REMAINING FRAMES
+   * CANVAS CONTEXT
    * -----------------------------------------
    */
 
   useEffect(() => {
-    if (!isReady) {
-      return;
-    }
+    if (!canvasRef.current) return;
 
-    let cancelled = false;
-
-    const loadRemainingFrames = async () => {
-      const BATCH_SIZE = 12;
-
-      for (
-        let start = INITIAL_FRAMES;
-        start < TOTAL_FRAMES;
-        start += BATCH_SIZE
-      ) {
-        if (cancelled) {
-          return;
-        }
-
-        const batch = [];
-
-        for (
-          let index = start;
-          index <
-          Math.min(
-            start + BATCH_SIZE,
-            TOTAL_FRAMES
-          );
-          index++
-        ) {
-          batch.push(
-            loadImage(index)
-          );
-        }
-
-        const results =
-          await Promise.all(batch);
-
-        if (cancelled) {
-          return;
-        }
-
-        results.forEach((result) => {
-          if (!result) {
-            return;
-          }
-
-          imagesRef.current[result.index] =
-            result.image;
-
-          if (result.success) {
-            setLoadedFrames(
-              (previous) =>
-                previous + 1
-            );
-          }
-        });
-
-        /*
-         * Give the browser
-         * a small breathing room.
-         */
-
-        await new Promise((resolve) => {
-          setTimeout(resolve, 10);
-        });
-      }
-    };
-
-    loadRemainingFrames();
+    contextRef.current =
+      canvasRef.current.getContext("2d", {
+        alpha: true,
+        desynchronized: true,
+      });
 
     return () => {
-      cancelled = true;
+      contextRef.current = null;
     };
-  }, [isReady, loadImage]);
+  }, []);
 
   /*
    * -----------------------------------------
-   * SHOW SIGNUP OFFER - FIRST TIME ONLY
-   * -----------------------------------------
-   *
-   * sessionStorage prevents the popup
-   * from appearing again during the
-   * same browser session.
-   *
-   * -----------------------------------------
-   */
-
-  useEffect(() => {
-    if (!isReady) {
-      return;
-    }
-
-    const alreadyShown =
-      sessionStorage.getItem(
-        "lumiere_signup_offer_shown"
-      );
-
-    /*
-     * If popup has already been shown,
-     * don't show it again.
-     */
-
-    if (alreadyShown) {
-      return;
-    }
-
-    const timer = setTimeout(() => {
-      setShowSignupOffer(true);
-
-      sessionStorage.setItem(
-        "lumiere_signup_offer_shown",
-        "true"
-      );
-    }, 700);
-
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [isReady]);
-
-  /*
-   * -----------------------------------------
-   * CLOSE SIGNUP OFFER
-   * -----------------------------------------
-   */
-
-  const closeSignupOffer = () => {
-    setShowSignupOffer(false);
-  };
-
-  /*
-   * -----------------------------------------
-   * FIND VALID FRAME
+   * FIND BEST AVAILABLE FRAME
    * -----------------------------------------
    */
 
   const getValidFrame = useCallback(
     (requestedIndex) => {
       const images = imagesRef.current;
-
-      if (!images.length) {
-        return null;
-      }
-
-      /*
-       * Requested frame
-       */
 
       const requested =
         images[requestedIndex];
@@ -351,42 +187,42 @@ export default function PremiumHero() {
       }
 
       /*
-       * Search backwards
+       * Search nearby frames first.
        */
 
       for (
-        let i = requestedIndex - 1;
-        i >= 0;
-        i--
+        let distance = 1;
+        distance <= 12;
+        distance++
       ) {
-        const image = images[i];
+        const previous =
+          requestedIndex - distance;
 
-        if (
-          image &&
-          image.complete &&
-          image.naturalWidth > 0
-        ) {
-          return image;
+        if (previous >= 0) {
+          const image = images[previous];
+
+          if (
+            image &&
+            image.complete &&
+            image.naturalWidth > 0
+          ) {
+            return image;
+          }
         }
-      }
 
-      /*
-       * Search forwards
-       */
+        const next =
+          requestedIndex + distance;
 
-      for (
-        let i = requestedIndex + 1;
-        i < images.length;
-        i++
-      ) {
-        const image = images[i];
+        if (next < TOTAL_FRAMES) {
+          const image = images[next];
 
-        if (
-          image &&
-          image.complete &&
-          image.naturalWidth > 0
-        ) {
-          return image;
+          if (
+            image &&
+            image.complete &&
+            image.naturalWidth > 0
+          ) {
+            return image;
+          }
         }
       }
 
@@ -404,24 +240,14 @@ export default function PremiumHero() {
   const drawFrame = useCallback(
     (frameIndex) => {
       const canvas = canvasRef.current;
+      const context = contextRef.current;
 
-      if (!canvas) {
-        return;
-      }
+      if (!canvas || !context) return;
 
       const image =
         getValidFrame(frameIndex);
 
-      if (!image) {
-        return;
-      }
-
-      const context =
-        canvas.getContext("2d");
-
-      if (!context) {
-        return;
-      }
+      if (!image) return;
 
       const rect =
         canvas.getBoundingClientRect();
@@ -429,18 +255,7 @@ export default function PremiumHero() {
       const width = rect.width;
       const height = rect.height;
 
-      if (
-        width <= 0 ||
-        height <= 0
-      ) {
-        return;
-      }
-
-      /*
-       * -------------------------------------
-       * DEVICE PIXEL RATIO
-       * -------------------------------------
-       */
+      if (width <= 0 || height <= 0) return;
 
       const pixelRatio = Math.min(
         window.devicePixelRatio || 1,
@@ -448,14 +263,10 @@ export default function PremiumHero() {
       );
 
       const canvasWidth =
-        Math.floor(
-          width * pixelRatio
-        );
+        Math.floor(width * pixelRatio);
 
       const canvasHeight =
-        Math.floor(
-          height * pixelRatio
-        );
+        Math.floor(height * pixelRatio);
 
       if (
         canvas.width !== canvasWidth ||
@@ -481,12 +292,6 @@ export default function PremiumHero() {
         height
       );
 
-      /*
-       * -------------------------------------
-       * CINEMATIC COVER
-       * -------------------------------------
-       */
-
       const imageRatio =
         image.naturalWidth /
         image.naturalHeight;
@@ -497,22 +302,18 @@ export default function PremiumHero() {
       let drawWidth;
       let drawHeight;
 
-      if (
-        imageRatio > canvasRatio
-      ) {
+      if (imageRatio > canvasRatio) {
         drawHeight = height;
-
         drawWidth =
           height * imageRatio;
       } else {
         drawWidth = width;
-
         drawHeight =
           width / imageRatio;
       }
 
       /*
-       * Slight cinematic crop.
+       * Very small crop for cinematic coverage.
        */
 
       const scale = 1.03;
@@ -526,80 +327,122 @@ export default function PremiumHero() {
       const y =
         (height - drawHeight) / 2;
 
-      /*
-       * -------------------------------------
-       * FINAL SAFETY CHECK
-       * -------------------------------------
-       */
-
-      if (
-        image.complete &&
-        image.naturalWidth > 0
-      ) {
-        context.drawImage(
-          image,
-          x,
-          y,
-          drawWidth,
-          drawHeight
-        );
-      }
+      context.drawImage(
+        image,
+        x,
+        y,
+        drawWidth,
+        drawHeight
+      );
     },
     [getValidFrame]
   );
 
   /*
    * -----------------------------------------
-   * INITIAL FRAME
+   * INITIAL DRAW
    * -----------------------------------------
    */
 
   useEffect(() => {
-    if (!isReady) {
-      return;
-    }
+    if (!isReady) return;
 
-    const frameRequest =
+    const frame =
       requestAnimationFrame(() => {
         drawFrame(0);
       });
 
     return () => {
-      cancelAnimationFrame(
-        frameRequest
-      );
+      cancelAnimationFrame(frame);
     };
   }, [isReady, drawFrame]);
 
   /*
    * -----------------------------------------
-   * RESIZE
+   * LOAD NEARBY FRAMES
    * -----------------------------------------
    */
 
-  useEffect(() => {
-    if (!isReady) {
-      return;
-    }
-
-    const handleResize = () => {
-      drawFrame(
-        currentFrameRef.current
+  const preloadAroundFrame = useCallback(
+    (centerFrame) => {
+      const start = Math.max(
+        0,
+        centerFrame - NEARBY_FRAMES
       );
-    };
 
-    window.addEventListener(
-      "resize",
-      handleResize
-    );
-
-    return () => {
-      window.removeEventListener(
-        "resize",
-        handleResize
+      const end = Math.min(
+        TOTAL_FRAMES,
+        centerFrame + NEARBY_FRAMES
       );
-    };
-  }, [isReady, drawFrame]);
+
+      const indexes = [];
+
+      /*
+       * Prioritize frames after the
+       * current frame because the user
+       * normally scrolls forward.
+       */
+
+      for (
+        let i = centerFrame;
+        i < end;
+        i++
+      ) {
+        indexes.push(i);
+      }
+
+      for (
+        let i = centerFrame - 1;
+        i >= start;
+        i--
+      ) {
+        indexes.push(i);
+      }
+
+      let position = 0;
+
+      const loadNext = () => {
+        if (position >= indexes.length) {
+          return;
+        }
+
+        const index =
+          indexes[position++];
+
+        if (
+          !loadedRef.current.has(index) &&
+          !loadingRef.current.has(index)
+        ) {
+          loadImage(index).finally(() => {
+            scheduleNext();
+          });
+
+          return;
+        }
+
+        scheduleNext();
+      };
+
+      const scheduleNext = () => {
+        if (
+          typeof window !==
+          "undefined" &&
+          "requestIdleCallback" in window
+        ) {
+          idleCallbackRef.current =
+            window.requestIdleCallback(
+              loadNext,
+              { timeout: 1000 }
+            );
+        } else {
+          setTimeout(loadNext, 30);
+        }
+      };
+
+      scheduleNext();
+    },
+    [loadImage]
+  );
 
   /*
    * -----------------------------------------
@@ -608,22 +451,26 @@ export default function PremiumHero() {
    */
 
   useEffect(() => {
-    if (!isReady) {
-      return;
-    }
+    if (!isReady) return;
 
     const unsubscribe =
       smoothProgress.on(
         "change",
         (progress) => {
-          const frame =
-            Math.floor(
-              clamp(
-                progress,
-                0,
-                0.999999
-              ) * TOTAL_FRAMES
-            );
+          const frame = Math.floor(
+            clamp(
+              progress,
+              0,
+              0.999999
+            ) * TOTAL_FRAMES
+          );
+
+          /*
+           * Start loading frames around
+           * the user's current position.
+           */
+
+          preloadAroundFrame(frame);
 
           if (
             frame ===
@@ -667,20 +514,119 @@ export default function PremiumHero() {
     isReady,
     smoothProgress,
     drawFrame,
+    preloadAroundFrame,
   ]);
 
   /*
    * -----------------------------------------
-   * LOADING
+   * RESIZE
    * -----------------------------------------
    */
 
-  const loadingPercentage =
-    Math.round(
-      (loadedFrames /
-        TOTAL_FRAMES) *
-        100
+  useEffect(() => {
+    if (!isReady) return;
+
+    let resizeTimer;
+
+    const handleResize = () => {
+      clearTimeout(resizeTimer);
+
+      resizeTimer = setTimeout(() => {
+        drawFrame(
+          currentFrameRef.current
+        );
+      }, 100);
+    };
+
+    window.addEventListener(
+      "resize",
+      handleResize
     );
+
+    return () => {
+      clearTimeout(resizeTimer);
+
+      window.removeEventListener(
+        "resize",
+        handleResize
+      );
+    };
+  }, [isReady, drawFrame]);
+
+  /*
+   * -----------------------------------------
+   * SIGNUP OFFER
+   * -----------------------------------------
+   */
+
+  useEffect(() => {
+    if (!isReady) return;
+
+    const alreadyShown =
+      sessionStorage.getItem(
+        "lumiere_signup_offer_shown"
+      );
+
+    if (alreadyShown) return;
+
+    const timer = setTimeout(() => {
+      setShowSignupOffer(true);
+
+      sessionStorage.setItem(
+        "lumiere_signup_offer_shown",
+        "true"
+      );
+    }, 700);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [isReady]);
+
+  /*
+   * -----------------------------------------
+   * CLEANUP
+   * -----------------------------------------
+   */
+
+  useEffect(() => {
+    return () => {
+      if (
+        animationFrameRef.current
+      ) {
+        cancelAnimationFrame(
+          animationFrameRef.current
+        );
+      }
+
+      if (
+        idleCallbackRef.current &&
+        "cancelIdleCallback" in window
+      ) {
+        window.cancelIdleCallback(
+          idleCallbackRef.current
+        );
+      }
+    };
+  }, []);
+
+  /*
+   * -----------------------------------------
+   * LOADER
+   * -----------------------------------------
+   */
+
+  const loadingPercentage = Math.min(
+    Math.round(
+      (Math.min(
+        loadedFrames,
+        INITIAL_FRAMES
+      ) /
+        INITIAL_FRAMES) *
+        100
+    ),
+    100
+  );
 
   return (
     <>
@@ -690,77 +636,50 @@ export default function PremiumHero() {
       >
         <div className="premium-hero__sticky">
 
-          {/* FRAME SEQUENCE */}
-
           <canvas
             ref={canvasRef}
             className="premium-hero__canvas"
           />
 
-          {/* CINEMATIC OVERLAY */}
-
           <div className="premium-hero__overlay" />
-
-          {/* LOADER */}
 
           {!isReady && (
             <div className="premium-hero__loader">
-
               <div className="premium-hero__loader-brand">
                 LUMIÈRE
               </div>
 
               <div className="premium-hero__loader-line">
-
                 <motion.div
                   className="premium-hero__loader-progress"
-
                   animate={{
-                    width:
-                      `${Math.min(
-                        loadingPercentage,
-                        100
-                      )}%`,
+                    width: `${loadingPercentage}%`,
                   }}
-
                   transition={{
                     duration: 0.2,
                   }}
                 />
-
               </div>
 
               <span>
-                {Math.min(
-                  loadingPercentage,
-                  100
-                )}
-                %
+                {loadingPercentage}%
               </span>
-
             </div>
           )}
 
-          {/* HERO CONTENT */}
-
           <motion.div
             className="premium-hero__content"
-
             initial={{
               opacity: 0,
             }}
-
             animate={{
-              opacity:
-                isReady ? 1 : 0,
+              opacity: isReady ? 1 : 0,
             }}
-
             transition={{
               duration: 1.2,
               ease: "easeOut",
             }}
           >
-
             <div className="premium-hero__eyebrow">
               ADVANCED SKINCARE
             </div>
@@ -790,42 +709,32 @@ export default function PremiumHero() {
                 →
               </span>
             </button>
-
           </motion.div>
-
-          {/* SCROLL */}
 
           <motion.div
             className="premium-hero__scroll"
-
             animate={{
-              opacity:
-                isReady ? 1 : 0,
+              opacity: isReady ? 1 : 0,
             }}
           >
-
             <div className="premium-hero__scroll-line">
-
               <motion.div
                 style={{
-                  scaleY:
-                    smoothProgress,
-                  transformOrigin:
-                    "top",
+                  scaleY: smoothProgress,
+                  transformOrigin: "top",
                 }}
               />
-
             </div>
-
           </motion.div>
+
         </div>
       </section>
 
-      {/* SIGNUP OFFER */}
-
       {showSignupOffer && (
         <SignupOffer
-          onClose={closeSignupOffer}
+          onClose={() =>
+            setShowSignupOffer(false)
+          }
         />
       )}
     </>
