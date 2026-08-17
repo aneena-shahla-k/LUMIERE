@@ -11,7 +11,6 @@ import SignupOffer from "./SignupOffer";
 const TOTAL_FRAMES = 206;
 const INITIAL_FRAMES = 12;
 const NEARBY_FRAMES = 18;
-const BACKGROUND_BATCH = 6;
 
 const getFramePath = (index) => {
   const frameNumber = String(index + 1).padStart(3, "0");
