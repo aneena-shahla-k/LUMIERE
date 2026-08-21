@@ -1,51 +1,21 @@
-/* =========================================================
-   PREMIUM HERO
-========================================================= */
-
 .premium-hero {
   position: relative;
-
   width: 100%;
   height: 600vh;
-
   background: #11100e;
-
-  margin: 0;
-  padding: 0;
-
-  overflow: visible;
 }
-
-
-/* =========================================================
-   STICKY VIEWPORT
-========================================================= */
 
 .premium-hero__sticky {
   position: sticky;
-
   top: 0;
-  left: 0;
 
   width: 100%;
-
-  height: 100vh;
   height: 100svh;
-
-  min-height: 100vh;
-  min-height: 100svh;
 
   overflow: hidden;
 
   background: #11100e;
-
-  isolation: isolate;
 }
-
-
-/* =========================================================
-   CANVAS
-========================================================= */
 
 .premium-hero__canvas {
   position: absolute;
@@ -56,43 +26,11 @@
   height: 100%;
 
   display: block;
-
-  margin: 0;
-  padding: 0;
-
-  /*
-    Prevent inline canvas baseline gap.
-  */
-  vertical-align: middle;
-
-  /*
-    GPU compositing.
-  */
-  transform: translate3d(0, 0, 0);
-
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-
-  /*
-    Important for mobile Safari.
-  */
-  touch-action: none;
-
-  z-index: 1;
 }
-
-
-/* =========================================================
-   OVERLAY
-========================================================= */
 
 .premium-hero__overlay {
   position: absolute;
-
   inset: 0;
-
-  width: 100%;
-  height: 100%;
 
   pointer-events: none;
 
@@ -102,48 +40,32 @@
     linear-gradient(
       90deg,
       rgba(20, 17, 14, 0.42) 0%,
-      rgba(20, 17, 14, 0.14) 38%,
+      rgba(20, 17, 14, 0.12) 38%,
       rgba(20, 17, 14, 0) 72%
     );
 }
 
-
-/* =========================================================
-   CONTENT
-========================================================= */
+/* --------------------------------
+   HERO CONTENT
+-------------------------------- */
 
 .premium-hero__content {
   position: absolute;
 
   z-index: 5;
 
-  left: clamp(
-    32px,
-    8vw,
-    150px
-  );
-
+  left: clamp(32px, 8vw, 150px);
   top: 50%;
 
   transform: translateY(-50%);
 
-  width: min(
-    calc(100% - 64px),
-    620px
-  );
-
   color: #f5f0e8;
 
-  pointer-events: none;
+  max-width: 620px;
 }
 
-
-/* =========================================================
-   EYEBROW
-========================================================= */
-
 .premium-hero__eyebrow {
-  margin: 0 0 22px;
+  margin-bottom: 22px;
 
   font-family:
     "Helvetica Neue",
@@ -153,8 +75,6 @@
 
   font-size: 10px;
 
-  line-height: 1;
-
   letter-spacing: 0.28em;
 
   font-weight: 500;
@@ -162,15 +82,8 @@
   opacity: 0.82;
 }
 
-
-/* =========================================================
-   HEADING
-========================================================= */
-
 .premium-hero__content h1 {
   margin: 0;
-
-  padding: 0;
 
   font-family:
     "Cormorant Garamond",
@@ -190,15 +103,8 @@
   letter-spacing: -0.045em;
 }
 
-
-/* =========================================================
-   DESCRIPTION
-========================================================= */
-
 .premium-hero__content p {
-  margin: 34px 0 0;
-
-  padding: 0;
+  margin-top: 34px;
 
   font-family:
     "Helvetica Neue",
@@ -215,15 +121,13 @@
   opacity: 0.78;
 }
 
-
-/* =========================================================
+/* --------------------------------
    CTA
-========================================================= */
+-------------------------------- */
 
 .premium-hero__cta {
-  position: relative;
+  margin-top: 38px;
 
-  margin: 38px 0 0;
   padding: 0;
 
   display: inline-flex;
@@ -240,8 +144,6 @@
 
   cursor: pointer;
 
-  pointer-events: auto;
-
   font-family:
     "Helvetica Neue",
     Helvetica,
@@ -250,13 +152,9 @@
 
   font-size: 10px;
 
-  line-height: 1;
-
   letter-spacing: 0.18em;
 
   text-transform: uppercase;
-
-  -webkit-tap-highlight-color: transparent;
 }
 
 .premium-hero__cta::after {
@@ -264,21 +162,17 @@
 
   position: absolute;
 
-  left: 0;
-
-  bottom: -14px;
-
   width: 145px;
 
   height: 1px;
 
-  background:
-    rgba(245, 240, 232, 0.55);
+  margin-top: 30px;
+
+  background: rgba(245, 240, 232, 0.55);
 
   transform-origin: left;
 
-  transition:
-    transform 0.5s ease;
+  transition: transform 0.5s ease;
 }
 
 .premium-hero__cta:hover::after {
@@ -299,19 +193,18 @@
   transform: translateX(7px);
 }
 
-
-/* =========================================================
+/* --------------------------------
    SCROLL INDICATOR
-========================================================= */
+-------------------------------- */
 
 .premium-hero__scroll {
   position: absolute;
 
   z-index: 5;
 
-  left: 50%;
-
   bottom: 38px;
+
+  left: 50%;
 
   transform: translateX(-50%);
 
@@ -323,8 +216,7 @@
 
   gap: 12px;
 
-  color:
-    rgba(245, 240, 232, 0.7);
+  color: rgba(245, 240, 232, 0.7);
 
   font-family:
     "Helvetica Neue",
@@ -335,8 +227,6 @@
   font-size: 8px;
 
   letter-spacing: 0.25em;
-
-  pointer-events: none;
 }
 
 .premium-hero__scroll-line {
@@ -352,15 +242,49 @@
 
 .premium-hero__scroll-line div {
   width: 100%;
+
   height: 100%;
 
   background: #f5f0e8;
 }
 
+/* --------------------------------
+   FRAME COUNTER
+-------------------------------- */
 
-/* =========================================================
+.premium-hero__counter {
+  position: absolute;
+
+  z-index: 5;
+
+  right: 42px;
+
+  bottom: 38px;
+
+  display: flex;
+
+  gap: 8px;
+
+  color: rgba(245, 240, 232, 0.72);
+
+  font-family:
+    "Helvetica Neue",
+    Helvetica,
+    Arial,
+    sans-serif;
+
+  font-size: 9px;
+
+  letter-spacing: 0.16em;
+}
+
+.premium-hero__counter-divider {
+  opacity: 0.35;
+}
+
+/* --------------------------------
    LOADER
-========================================================= */
+-------------------------------- */
 
 .premium-hero__loader {
   position: absolute;
@@ -368,9 +292,6 @@
   inset: 0;
 
   z-index: 20;
-
-  width: 100%;
-  height: 100%;
 
   display: flex;
 
@@ -388,12 +309,9 @@
 .premium-hero__loader-brand {
   font-family:
     "Cormorant Garamond",
-    "Times New Roman",
     serif;
 
   font-size: 34px;
-
-  line-height: 1;
 
   letter-spacing: 0.14em;
 
@@ -412,8 +330,6 @@
 }
 
 .premium-hero__loader-progress {
-  width: 0;
-
   height: 100%;
 
   background: #f5f0e8;
@@ -422,133 +338,36 @@
 .premium-hero__loader > span {
   margin-top: 12px;
 
-  font-family:
-    "Helvetica Neue",
-    Helvetica,
-    Arial,
-    sans-serif;
-
   font-size: 9px;
-
-  line-height: 1;
 
   letter-spacing: 0.15em;
 
   opacity: 0.5;
 }
 
+/* --------------------------------
+   MOBILE
+-------------------------------- */
 
-/* =========================================================
-   TABLET
-========================================================= */
+@media (max-width: 768px) {
 
-@media (max-width: 1024px) {
   .premium-hero {
     height: 500vh;
   }
 
-  .premium-hero__content {
-    left: 6vw;
-
-    width: min(
-      600px,
-      calc(100% - 12vw)
-    );
-  }
-}
-
-
-/* =========================================================
-   MOBILE
-========================================================= */
-
-@media (max-width: 768px) {
-
-  /*
-    Shorter scroll distance on mobile.
-  */
-  .premium-hero {
-    height: 400vh;
-
-    /*
-      Keep the same background even when
-      the sticky element reaches the end.
-    */
-    background: #11100e;
-
-    /*
-      Prevent accidental horizontal overflow.
-    */
-    width: 100%;
-    max-width: 100%;
-  }
-
-
-  /*
-    IMPORTANT:
-    Use dynamic viewport height where available.
-  */
   .premium-hero__sticky {
-    top: 0;
-
-    width: 100%;
-
-    height: 100vh;
     height: 100svh;
-    height: 100dvh;
-
-    min-height: 100vh;
-    min-height: 100svh;
-
-    overflow: hidden;
-
-    background: #11100e;
   }
-
-
-  /* -----------------------------------------
-     CANVAS
-  ----------------------------------------- */
-
-  .premium-hero__canvas {
-    width: 100%;
-    height: 100%;
-
-    display: block;
-
-    /*
-      Prevent canvas from creating
-      an extra bottom inline gap.
-    */
-    vertical-align: middle;
-
-    transform: translate3d(
-      0,
-      0,
-      0
-    );
-  }
-
-
-  /* -----------------------------------------
-     OVERLAY
-  ----------------------------------------- */
 
   .premium-hero__overlay {
     background:
       linear-gradient(
         180deg,
-        rgba(15, 14, 12, 0.20) 0%,
-        rgba(15, 14, 12, 0.06) 35%,
-        rgba(15, 14, 12, 0.22) 62%,
-        rgba(15, 14, 12, 0.68) 100%
+        rgba(15, 14, 12, 0.22) 0%,
+        rgba(15, 14, 12, 0.08) 38%,
+        rgba(15, 14, 12, 0.62) 100%
       );
   }
-
-
-  /* -----------------------------------------
-     CONTENT
-  ----------------------------------------- */
 
   .premium-hero__content {
     left: 24px;
@@ -559,27 +378,14 @@
 
     transform: none;
 
-    width: auto;
     max-width: none;
   }
 
-
-  /* -----------------------------------------
-     EYEBROW
-  ----------------------------------------- */
-
   .premium-hero__eyebrow {
-    margin-bottom: 14px;
-
     font-size: 8px;
 
-    letter-spacing: 0.25em;
+    margin-bottom: 14px;
   }
-
-
-  /* -----------------------------------------
-     HEADING
-  ----------------------------------------- */
 
   .premium-hero__content h1 {
     font-size: clamp(
@@ -589,14 +395,7 @@
     );
 
     line-height: 0.88;
-
-    letter-spacing: -0.045em;
   }
-
-
-  /* -----------------------------------------
-     DESCRIPTION
-  ----------------------------------------- */
 
   .premium-hero__content p {
     margin-top: 22px;
@@ -604,44 +403,18 @@
     font-size: 11px;
 
     line-height: 1.6;
-
-    max-width: 310px;
   }
-
-
-  /* -----------------------------------------
-     CTA
-  ----------------------------------------- */
 
   .premium-hero__cta {
     margin-top: 26px;
 
-    gap: 20px;
-
     font-size: 8px;
-
-    letter-spacing: 0.18em;
   }
-
-  .premium-hero__cta::after {
-    width: 130px;
-
-    bottom: -13px;
-  }
-
-  .premium-hero__arrow {
-    font-size: 17px;
-  }
-
-
-  /* -----------------------------------------
-     SCROLL INDICATOR
-  ----------------------------------------- */
 
   .premium-hero__scroll {
-    bottom: 27px;
+    bottom: 28px;
 
-    gap: 8px;
+    left: 50%;
 
     font-size: 7px;
   }
@@ -650,144 +423,11 @@
     height: 30px;
   }
 
-
-  /* -----------------------------------------
-     LOADER
-  ----------------------------------------- */
-
-  .premium-hero__loader-brand {
-    font-size: 30px;
-
-    margin-bottom: 24px;
-  }
-
-  .premium-hero__loader-line {
-    width: 150px;
-  }
-}
-
-
-/* =========================================================
-   SMALL PHONES
-========================================================= */
-
-@media (max-width: 390px) {
-
-  .premium-hero {
-    height: 380vh;
-  }
-
-  .premium-hero__content {
-    left: 20px;
+  .premium-hero__counter {
     right: 20px;
 
-    bottom: 92px;
-  }
+    bottom: 29px;
 
-  .premium-hero__content h1 {
-    font-size: 43px;
-  }
-
-  .premium-hero__content p {
-    font-size: 10.5px;
-  }
-
-  .premium-hero__cta {
-    margin-top: 23px;
-  }
-
-  .premium-hero__scroll {
-    bottom: 22px;
-  }
-}
-
-
-/* =========================================================
-   LANDSCAPE MOBILE
-========================================================= */
-
-@media (
-  max-width: 900px
-) and (
-  orientation: landscape
-) {
-
-  .premium-hero {
-    height: 350vh;
-  }
-
-  .premium-hero__sticky {
-    height: 100svh;
-    min-height: 100svh;
-  }
-
-  .premium-hero__content {
-    left: 28px;
-    bottom: 45px;
-
-    transform: none;
-  }
-
-  .premium-hero__eyebrow {
-    margin-bottom: 10px;
-  }
-
-  .premium-hero__content h1 {
-    font-size: clamp(
-      38px,
-      7vw,
-      58px
-    );
-  }
-
-  .premium-hero__content p {
-    margin-top: 12px;
-
-    font-size: 10px;
-  }
-
-  .premium-hero__cta {
-    margin-top: 15px;
-  }
-
-  .premium-hero__scroll {
-    bottom: 20px;
-  }
-}
-
-
-/* =========================================================
-   SAFARI / IOS FIX
-========================================================= */
-
-@supports (-webkit-touch-callout: none) {
-
-  .premium-hero__sticky {
-    height: -webkit-fill-available;
-    min-height: -webkit-fill-available;
-  }
-
-  @media (max-width: 768px) {
-
-    .premium-hero__sticky {
-      height: 100svh;
-      min-height: 100svh;
-    }
-
-    .premium-hero {
-      min-height: 400svh;
-    }
-  }
-}
-
-
-/* =========================================================
-   REDUCE MOTION
-========================================================= */
-
-@media (prefers-reduced-motion: reduce) {
-  .premium-hero__cta::after,
-  .premium-hero__arrow {
-    transition: none;
+    font-size: 8px;
   }
 }
