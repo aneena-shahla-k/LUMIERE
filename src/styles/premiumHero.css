@@ -345,11 +345,15 @@
 
 @media (max-width: 768px) {
   .premium-hero {
-    height: 500vh;
+    height: 420vh;
   }
 
   .premium-hero__sticky {
+    position: sticky;
+    top: 0;
     height: 100svh;
+    min-height: 100svh;
+    overflow: hidden;
   }
 
   .premium-hero__overlay {
