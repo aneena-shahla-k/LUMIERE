@@ -18,10 +18,10 @@
 }
 
 /* --------------------------------
-   VIDEO
+   CANVAS
 -------------------------------- */
 
-.premium-hero__video {
+.premium-hero__canvas {
   position: absolute;
 
   inset: 0;
@@ -31,25 +31,12 @@
 
   display: block;
 
-  object-fit: cover;
-
   /*
-    Matches the old canvas 1.03 scale.
+    Helps browser keep canvas composited.
   */
-  transform: scale(1.03);
+  transform: translateZ(0);
 
-  transform-origin: center center;
-
-  /*
-    Prevent accidental interaction.
-  */
-  pointer-events: none;
-
-  /*
-    Helps browser compositing.
-  */
   backface-visibility: hidden;
-
   -webkit-backface-visibility: hidden;
 }
 
@@ -76,7 +63,7 @@
 }
 
 /* --------------------------------
-   HERO CONTENT
+   CONTENT
 -------------------------------- */
 
 .premium-hero__content {
@@ -84,7 +71,12 @@
 
   z-index: 5;
 
-  left: clamp(32px, 8vw, 150px);
+  left: clamp(
+    32px,
+    8vw,
+    150px
+  );
+
   top: 50%;
 
   transform: translateY(-50%);
@@ -195,6 +187,7 @@
   position: absolute;
 
   left: 0;
+
   bottom: -14px;
 
   width: 145px;
@@ -229,7 +222,7 @@
 }
 
 /* --------------------------------
-   SCROLL INDICATOR
+   SCROLL
 -------------------------------- */
 
 .premium-hero__scroll {
@@ -278,7 +271,6 @@
 
 .premium-hero__scroll-line div {
   width: 100%;
-
   height: 100%;
 
   background: #f5f0e8;
@@ -360,10 +352,6 @@
     height: 100svh;
   }
 
-  .premium-hero__video {
-    transform: scale(1.03);
-  }
-
   .premium-hero__overlay {
     background:
       linear-gradient(
@@ -419,20 +407,10 @@
   .premium-hero__scroll {
     bottom: 28px;
 
-    left: 50%;
-
     font-size: 7px;
   }
 
   .premium-hero__scroll-line {
     height: 30px;
   }
-}
-.premium-hero__video {
-  opacity: 0;
-  transition: opacity 0.4s ease;
-}
-
-.premium-hero__video.is-ready {
-  opacity: 1;
 }
