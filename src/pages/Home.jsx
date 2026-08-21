@@ -14,7 +14,6 @@ export default function Home() {
       <PremiumHero />
       <BrandManifesto />
       <CollectionSection />
-      {/* <ScienceSection/> */}
       <LumiereEdit />
       <RitualSection />
       
@@ -23,10 +22,6 @@ export default function Home() {
       <div className="w-full p-0 m-0 block">
         <ResultsSection />
       </div>
-
-      {/* <div className="w-full p-0 m-0 block relative">
-        <BottleScrollAnimation />
-      </div> */}
     </main>
   );
 }

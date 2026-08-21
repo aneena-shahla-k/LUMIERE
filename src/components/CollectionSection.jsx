@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { Link } from "react-router-dom"; // <-- Import Link
 import { useCart } from "../context/CartContext";
+import { ArrowUpRight } from "lucide-react";
 import { useWishlist } from "../context/WishlistContext";
 import "../styles/collectionSection.css";
 import img from "../images/serum2.jpg";
@@ -231,7 +232,7 @@ export default function CollectionSection() {
         <p>EXPLORE THE COMPLETE RANGE</p>
         <Link to="/shop" className="view-all-button">
           SHOP ALL PRODUCTS
-          <span>↗</span>
+          <ArrowUpRight size={17} />
         </Link>
       </div>
 

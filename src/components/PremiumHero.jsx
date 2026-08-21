@@ -8,51 +8,134 @@ import { motion, useScroll, useSpring } from "framer-motion";
 import "../styles/premiumHero.css";
 import SignupOffer from "./SignupOffer";
 
+/* --------------------------------
+   FRAME CONFIG
+-------------------------------- */
+
 const TOTAL_FRAMES = 206;
-const INITIAL_FRAMES = 12;
-const NEARBY_FRAMES = 18;
+
+/*
+  Only load a very small number of frames
+  before showing the hero.
+*/
+const INITIAL_FRAMES = 4;
+
+/*
+  Load a small window around the current
+  frame instead of ±18 frames.
+*/
+const NEARBY_FRAMES = 6;
+
+/*
+  How many frames to progressively load
+  in the background after the hero is ready.
+*/
+const BACKGROUND_BATCH_SIZE = 4;
+
+
+/* --------------------------------
+   FRAME PATH
+-------------------------------- */
 
 const getFramePath = (index) => {
   const frameNumber = String(index + 1).padStart(3, "0");
+
   return `/skin-frames/ezgif-frame-${frameNumber}.webp`;
 };
 
+
+/* --------------------------------
+   HELPERS
+-------------------------------- */
+
 const clamp = (value, min, max) =>
   Math.min(Math.max(value, min), max);
+
 
 export default function PremiumHero() {
   const sectionRef = useRef(null);
   const canvasRef = useRef(null);
   const contextRef = useRef(null);
 
+  /*
+    Image storage
+  */
   const imagesRef = useRef([]);
+
+  /*
+    Prevent duplicate requests
+  */
   const loadingRef = useRef(new Set());
   const loadedRef = useRef(new Set());
 
+  /*
+    Current frame
+  */
   const currentFrameRef = useRef(0);
+
+  /*
+    Animation frame
+  */
   const animationFrameRef = useRef(null);
+
+  /*
+    Idle callback
+  */
   const idleCallbackRef = useRef(null);
 
+  /*
+    Background loading
+  */
+  const backgroundLoadingRef = useRef(false);
+  const backgroundCursorRef = useRef(INITIAL_FRAMES);
+
+  /*
+    Canvas dimensions cache
+  */
+  const canvasSizeRef = useRef({
+    width: 0,
+    height: 0,
+    pixelRatio: 1,
+  });
+
+  /*
+    Last drawn frame
+  */
+  const lastDrawnFrameRef = useRef(-1);
+
+  /*
+    State
+  */
   const [loadedFrames, setLoadedFrames] = useState(0);
   const [isReady, setIsReady] = useState(false);
   const [showSignupOffer, setShowSignupOffer] = useState(false);
+
+
+  /* --------------------------------
+     SCROLL
+  -------------------------------- */
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start start", "end end"],
   });
 
-  const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 100,
-    damping: 30,
-    mass: 0.2,
-  });
 
   /*
-   * -----------------------------------------
-   * LOAD IMAGE
-   * -----------------------------------------
-   */
+    Slightly lighter spring than before.
+    This reduces unnecessary frame changes
+    during very fast scrolling.
+  */
+  const smoothProgress = useSpring(scrollYProgress, {
+    stiffness: 120,
+    damping: 32,
+    mass: 0.25,
+  });
+
+
+  /* --------------------------------
+     LOAD IMAGE
+  -------------------------------- */
 
   const loadImage = useCallback((index) => {
     if (
@@ -61,48 +144,52 @@ export default function PremiumHero() {
       loadedRef.current.has(index) ||
       loadingRef.current.has(index)
     ) {
-      return Promise.resolve(null);
+      return Promise.resolve(
+        imagesRef.current[index] || null
+      );
     }
 
     loadingRef.current.add(index);
 
     return new Promise((resolve) => {
       const image = new Image();
-      const path = getFramePath(index);
 
+      /*
+        Async decoding helps keep image decoding
+        away from the critical render path.
+      */
       image.decoding = "async";
 
-      image.onload = async () => {
-        try {
-          if (image.decode) {
-            await image.decode();
-          }
-        } catch {
-          // Image can still be usable after decode failure.
-        }
+      const path = getFramePath(index);
 
-        loadingRef.current.delete(index);
+      image.onload = () => {
+        /*
+          Store the image immediately.
 
+          Do NOT wait for image.decode()
+          before marking it available.
+        */
         if (
           image.naturalWidth > 0 &&
           image.naturalHeight > 0
         ) {
           imagesRef.current[index] = image;
+
           loadedRef.current.add(index);
 
           setLoadedFrames(
             loadedRef.current.size
           );
-
-          resolve(image);
-          return;
         }
 
-        resolve(null);
+        loadingRef.current.delete(index);
+
+        resolve(image);
       };
 
       image.onerror = () => {
         loadingRef.current.delete(index);
+
         resolve(null);
       };
 
@@ -110,30 +197,37 @@ export default function PremiumHero() {
     });
   }, []);
 
-  /*
-   * -----------------------------------------
-   * INITIAL PRELOAD
-   * -----------------------------------------
-   */
+
+  /* --------------------------------
+     INITIAL PRELOAD
+  -------------------------------- */
 
   useEffect(() => {
     let cancelled = false;
 
     const preloadInitialFrames = async () => {
-      const promises = [];
+      /*
+        Load only the first few frames.
 
+        Sequential loading avoids firing many
+        large image requests at once.
+      */
       for (
         let index = 0;
         index < INITIAL_FRAMES;
         index++
       ) {
-        promises.push(loadImage(index));
-      }
+        if (cancelled) return;
 
-      await Promise.all(promises);
+        await loadImage(index);
+      }
 
       if (cancelled) return;
 
+      /*
+        Show the hero as soon as the first
+        frames are available.
+      */
       setIsReady(true);
     };
 
@@ -144,36 +238,83 @@ export default function PremiumHero() {
     };
   }, [loadImage]);
 
-  /*
-   * -----------------------------------------
-   * CANVAS CONTEXT
-   * -----------------------------------------
-   */
+
+  /* --------------------------------
+     CANVAS CONTEXT
+  -------------------------------- */
 
   useEffect(() => {
     if (!canvasRef.current) return;
 
-    contextRef.current =
+    const context =
       canvasRef.current.getContext("2d", {
         alpha: true,
         desynchronized: true,
       });
+
+    contextRef.current = context;
 
     return () => {
       contextRef.current = null;
     };
   }, []);
 
-  /*
-   * -----------------------------------------
-   * FIND BEST AVAILABLE FRAME
-   * -----------------------------------------
-   */
+
+  /* --------------------------------
+     UPDATE CANVAS SIZE
+  -------------------------------- */
+
+  const updateCanvasSize = useCallback(() => {
+    const canvas = canvasRef.current;
+
+    if (!canvas) return;
+
+    const rect =
+      canvas.getBoundingClientRect();
+
+    const width = rect.width;
+    const height = rect.height;
+
+    if (width <= 0 || height <= 0) return;
+
+    const pixelRatio = Math.min(
+      window.devicePixelRatio || 1,
+      2
+    );
+
+    const canvasWidth =
+      Math.floor(width * pixelRatio);
+
+    const canvasHeight =
+      Math.floor(height * pixelRatio);
+
+    if (
+      canvas.width !== canvasWidth ||
+      canvas.height !== canvasHeight
+    ) {
+      canvas.width = canvasWidth;
+      canvas.height = canvasHeight;
+    }
+
+    canvasSizeRef.current = {
+      width,
+      height,
+      pixelRatio,
+    };
+  }, []);
+
+
+  /* --------------------------------
+     FIND BEST AVAILABLE FRAME
+  -------------------------------- */
 
   const getValidFrame = useCallback(
     (requestedIndex) => {
       const images = imagesRef.current;
 
+      /*
+        First try exact frame.
+      */
       const requested =
         images[requestedIndex];
 
@@ -186,19 +327,21 @@ export default function PremiumHero() {
       }
 
       /*
-       * Search nearby frames first.
-       */
+        Search only a few nearby frames.
 
+        This keeps fallback lookup cheap.
+      */
       for (
         let distance = 1;
-        distance <= 12;
+        distance <= NEARBY_FRAMES;
         distance++
       ) {
         const previous =
           requestedIndex - distance;
 
         if (previous >= 0) {
-          const image = images[previous];
+          const image =
+            images[previous];
 
           if (
             image &&
@@ -213,7 +356,8 @@ export default function PremiumHero() {
           requestedIndex + distance;
 
         if (next < TOTAL_FRAMES) {
-          const image = images[next];
+          const image =
+            images[next];
 
           if (
             image &&
@@ -225,16 +369,33 @@ export default function PremiumHero() {
         }
       }
 
+      /*
+        Last fallback:
+        search loaded frames globally.
+
+        This is rarely reached.
+      */
+      for (let i = 0; i < TOTAL_FRAMES; i++) {
+        const image = images[i];
+
+        if (
+          image &&
+          image.complete &&
+          image.naturalWidth > 0
+        ) {
+          return image;
+        }
+      }
+
       return null;
     },
     []
   );
 
-  /*
-   * -----------------------------------------
-   * DRAW FRAME
-   * -----------------------------------------
-   */
+
+  /* --------------------------------
+     DRAW FRAME
+  -------------------------------- */
 
   const drawFrame = useCallback(
     (frameIndex) => {
@@ -243,43 +404,58 @@ export default function PremiumHero() {
 
       if (!canvas || !context) return;
 
+      /*
+        Don't redraw the same frame.
+      */
+      if (
+        lastDrawnFrameRef.current ===
+        frameIndex
+      ) {
+        return;
+      }
+
       const image =
         getValidFrame(frameIndex);
 
       if (!image) return;
 
-      const rect =
-        canvas.getBoundingClientRect();
+      /*
+        Use cached canvas dimensions.
+      */
+      const {
+        width,
+        height,
+        pixelRatio,
+      } = canvasSizeRef.current;
 
-      const width = rect.width;
-      const height = rect.height;
+      if (width <= 0 || height <= 0) {
+        updateCanvasSize();
+      }
 
-      if (width <= 0 || height <= 0) return;
-
-      const pixelRatio = Math.min(
-        window.devicePixelRatio || 1,
-        2
-      );
+      const currentSize =
+        canvasSizeRef.current;
 
       const canvasWidth =
-        Math.floor(width * pixelRatio);
+        currentSize.width;
 
       const canvasHeight =
-        Math.floor(height * pixelRatio);
+        currentSize.height;
+
+      const ratio =
+        currentSize.pixelRatio;
 
       if (
-        canvas.width !== canvasWidth ||
-        canvas.height !== canvasHeight
+        canvasWidth <= 0 ||
+        canvasHeight <= 0
       ) {
-        canvas.width = canvasWidth;
-        canvas.height = canvasHeight;
+        return;
       }
 
       context.setTransform(
-        pixelRatio,
+        ratio,
         0,
         0,
-        pixelRatio,
+        ratio,
         0,
         0
       );
@@ -287,8 +463,8 @@ export default function PremiumHero() {
       context.clearRect(
         0,
         0,
-        width,
-        height
+        canvasWidth,
+        canvasHeight
       );
 
       const imageRatio =
@@ -296,35 +472,36 @@ export default function PremiumHero() {
         image.naturalHeight;
 
       const canvasRatio =
-        width / height;
+        canvasWidth / canvasHeight;
 
       let drawWidth;
       let drawHeight;
 
       if (imageRatio > canvasRatio) {
-        drawHeight = height;
+        drawHeight = canvasHeight;
+
         drawWidth =
-          height * imageRatio;
+          canvasHeight * imageRatio;
       } else {
-        drawWidth = width;
+        drawWidth = canvasWidth;
+
         drawHeight =
-          width / imageRatio;
+          canvasWidth / imageRatio;
       }
 
       /*
-       * Very small crop for cinematic coverage.
-       */
-
+        Small cinematic crop.
+      */
       const scale = 1.03;
 
       drawWidth *= scale;
       drawHeight *= scale;
 
       const x =
-        (width - drawWidth) / 2;
+        (canvasWidth - drawWidth) / 2;
 
       const y =
-        (height - drawHeight) / 2;
+        (canvasHeight - drawHeight) / 2;
 
       context.drawImage(
         image,
@@ -333,18 +510,25 @@ export default function PremiumHero() {
         drawWidth,
         drawHeight
       );
+
+      lastDrawnFrameRef.current =
+        frameIndex;
     },
-    [getValidFrame]
+    [
+      getValidFrame,
+      updateCanvasSize,
+    ]
   );
 
-  /*
-   * -----------------------------------------
-   * INITIAL DRAW
-   * -----------------------------------------
-   */
+
+  /* --------------------------------
+     INITIAL CANVAS DRAW
+  -------------------------------- */
 
   useEffect(() => {
     if (!isReady) return;
+
+    updateCanvasSize();
 
     const frame =
       requestAnimationFrame(() => {
@@ -354,16 +538,22 @@ export default function PremiumHero() {
     return () => {
       cancelAnimationFrame(frame);
     };
-  }, [isReady, drawFrame]);
+  }, [
+    isReady,
+    drawFrame,
+    updateCanvasSize,
+  ]);
 
-  /*
-   * -----------------------------------------
-   * LOAD NEARBY FRAMES
-   * -----------------------------------------
-   */
+
+  /* --------------------------------
+     LOAD NEARBY FRAMES
+  -------------------------------- */
 
   const preloadAroundFrame = useCallback(
     (centerFrame) => {
+      /*
+        Smaller loading window.
+      */
       const start = Math.max(
         0,
         centerFrame - NEARBY_FRAMES
@@ -371,16 +561,13 @@ export default function PremiumHero() {
 
       const end = Math.min(
         TOTAL_FRAMES,
-        centerFrame + NEARBY_FRAMES
+        centerFrame + NEARBY_FRAMES + 1
       );
 
-      const indexes = [];
-
       /*
-       * Prioritize frames after the
-       * current frame because the user
-       * normally scrolls forward.
-       */
+        Prioritize frames ahead of the user.
+      */
+      const indexes = [];
 
       for (
         let i = centerFrame;
@@ -398,6 +585,9 @@ export default function PremiumHero() {
         indexes.push(i);
       }
 
+      /*
+        Only start a few requests at a time.
+      */
       let position = 0;
 
       const loadNext = () => {
@@ -424,17 +614,21 @@ export default function PremiumHero() {
 
       const scheduleNext = () => {
         if (
-          typeof window !==
-          "undefined" &&
+          typeof window !== "undefined" &&
           "requestIdleCallback" in window
         ) {
           idleCallbackRef.current =
             window.requestIdleCallback(
               loadNext,
-              { timeout: 1000 }
+              {
+                timeout: 500,
+              }
             );
         } else {
-          setTimeout(loadNext, 30);
+          setTimeout(
+            loadNext,
+            40
+          );
         }
       };
 
@@ -443,11 +637,111 @@ export default function PremiumHero() {
     [loadImage]
   );
 
-  /*
-   * -----------------------------------------
-   * SCROLL → FRAME
-   * -----------------------------------------
-   */
+
+  /* --------------------------------
+     BACKGROUND LOAD ALL FRAMES
+  -------------------------------- */
+
+  const loadRemainingFrames =
+    useCallback(() => {
+      if (backgroundLoadingRef.current) {
+        return;
+      }
+
+      backgroundLoadingRef.current =
+        true;
+
+      const loadBatch = () => {
+        const start =
+          backgroundCursorRef.current;
+
+        if (start >= TOTAL_FRAMES) {
+          backgroundLoadingRef.current =
+            false;
+
+          return;
+        }
+
+        const end = Math.min(
+          start + BACKGROUND_BATCH_SIZE,
+          TOTAL_FRAMES
+        );
+
+        backgroundCursorRef.current =
+          end;
+
+        const promises = [];
+
+        for (
+          let i = start;
+          i < end;
+          i++
+        ) {
+          if (
+            !loadedRef.current.has(i) &&
+            !loadingRef.current.has(i)
+          ) {
+            promises.push(
+              loadImage(i)
+            );
+          }
+        }
+
+        Promise.all(promises).finally(() => {
+          /*
+            Continue only when browser is idle.
+          */
+          if (
+            typeof window !== "undefined" &&
+            "requestIdleCallback" in window
+          ) {
+            idleCallbackRef.current =
+              window.requestIdleCallback(
+                loadBatch,
+                {
+                  timeout: 1000,
+                }
+              );
+          } else {
+            setTimeout(
+              loadBatch,
+              100
+            );
+          }
+        });
+      };
+
+      loadBatch();
+    }, [loadImage]);
+
+
+  /* --------------------------------
+     START BACKGROUND LOADING
+  -------------------------------- */
+
+  useEffect(() => {
+    if (!isReady) return;
+
+    /*
+      Give the browser a moment to render
+      the hero before loading the rest.
+    */
+    const timer = setTimeout(() => {
+      loadRemainingFrames();
+    }, 800);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [
+    isReady,
+    loadRemainingFrames,
+  ]);
+
+
+  /* --------------------------------
+     SCROLL → FRAME
+  -------------------------------- */
 
   useEffect(() => {
     if (!isReady) return;
@@ -465,12 +759,13 @@ export default function PremiumHero() {
           );
 
           /*
-           * Start loading frames around
-           * the user's current position.
-           */
-
+            Request nearby frames.
+          */
           preloadAroundFrame(frame);
 
+          /*
+            Avoid unnecessary redraws.
+          */
           if (
             frame ===
             currentFrameRef.current
@@ -481,6 +776,9 @@ export default function PremiumHero() {
           currentFrameRef.current =
             frame;
 
+          /*
+            Cancel previous pending draw.
+          */
           if (
             animationFrameRef.current
           ) {
@@ -489,6 +787,9 @@ export default function PremiumHero() {
             );
           }
 
+          /*
+            Draw only once per browser frame.
+          */
           animationFrameRef.current =
             requestAnimationFrame(() => {
               drawFrame(frame);
@@ -506,7 +807,8 @@ export default function PremiumHero() {
           animationFrameRef.current
         );
 
-        animationFrameRef.current = null;
+        animationFrameRef.current =
+          null;
       }
     };
   }, [
@@ -516,11 +818,10 @@ export default function PremiumHero() {
     preloadAroundFrame,
   ]);
 
-  /*
-   * -----------------------------------------
-   * RESIZE
-   * -----------------------------------------
-   */
+
+  /* --------------------------------
+     RESIZE
+  -------------------------------- */
 
   useEffect(() => {
     if (!isReady) return;
@@ -531,15 +832,22 @@ export default function PremiumHero() {
       clearTimeout(resizeTimer);
 
       resizeTimer = setTimeout(() => {
+        updateCanvasSize();
+
+        lastDrawnFrameRef.current = -1;
+
         drawFrame(
           currentFrameRef.current
         );
-      }, 100);
+      }, 150);
     };
 
     window.addEventListener(
       "resize",
-      handleResize
+      handleResize,
+      {
+        passive: true,
+      }
     );
 
     return () => {
@@ -550,13 +858,16 @@ export default function PremiumHero() {
         handleResize
       );
     };
-  }, [isReady, drawFrame]);
+  }, [
+    isReady,
+    drawFrame,
+    updateCanvasSize,
+  ]);
 
-  /*
-   * -----------------------------------------
-   * SIGNUP OFFER
-   * -----------------------------------------
-   */
+
+  /* --------------------------------
+     SIGNUP OFFER
+  -------------------------------- */
 
   useEffect(() => {
     if (!isReady) return;
@@ -582,11 +893,10 @@ export default function PremiumHero() {
     };
   }, [isReady]);
 
-  /*
-   * -----------------------------------------
-   * CLEANUP
-   * -----------------------------------------
-   */
+
+  /* --------------------------------
+     CLEANUP
+  -------------------------------- */
 
   useEffect(() => {
     return () => {
@@ -609,23 +919,28 @@ export default function PremiumHero() {
     };
   }, []);
 
-  /*
-   * -----------------------------------------
-   * LOADER
-   * -----------------------------------------
-   */
+
+  /* --------------------------------
+     LOADING PERCENTAGE
+  -------------------------------- */
 
   const loadingPercentage = Math.min(
     Math.round(
-      (Math.min(
-        loadedFrames,
-        INITIAL_FRAMES
-      ) /
-        INITIAL_FRAMES) *
-        100
+      (
+        Math.min(
+          loadedFrames,
+          INITIAL_FRAMES
+        ) /
+          INITIAL_FRAMES
+      ) * 100
     ),
     100
   );
+
+
+  /* --------------------------------
+     RENDER
+  -------------------------------- */
 
   return (
     <>
@@ -635,15 +950,20 @@ export default function PremiumHero() {
       >
         <div className="premium-hero__sticky">
 
+          {/* CANVAS */}
           <canvas
             ref={canvasRef}
             className="premium-hero__canvas"
           />
 
+          {/* OVERLAY */}
           <div className="premium-hero__overlay" />
 
+
+          {/* LOADER */}
           {!isReady && (
             <div className="premium-hero__loader">
+
               <div className="premium-hero__loader-brand">
                 LUMIÈRE
               </div>
@@ -655,7 +975,8 @@ export default function PremiumHero() {
                     width: `${loadingPercentage}%`,
                   }}
                   transition={{
-                    duration: 0.2,
+                    duration: 0.15,
+                    ease: "easeOut",
                   }}
                 />
               </div>
@@ -663,22 +984,29 @@ export default function PremiumHero() {
               <span>
                 {loadingPercentage}%
               </span>
+
             </div>
           )}
 
+
+          {/* HERO CONTENT */}
           <motion.div
             className="premium-hero__content"
+
             initial={{
               opacity: 0,
             }}
+
             animate={{
               opacity: isReady ? 1 : 0,
             }}
+
             transition={{
               duration: 1.2,
               ease: "easeOut",
             }}
           >
+
             <div className="premium-hero__eyebrow">
               ADVANCED SKINCARE
             </div>
@@ -708,27 +1036,37 @@ export default function PremiumHero() {
                 →
               </span>
             </button>
+
           </motion.div>
 
+
+          {/* SCROLL INDICATOR */}
           <motion.div
             className="premium-hero__scroll"
+
             animate={{
               opacity: isReady ? 1 : 0,
             }}
           >
+
             <div className="premium-hero__scroll-line">
+
               <motion.div
                 style={{
                   scaleY: smoothProgress,
                   transformOrigin: "top",
                 }}
               />
+
             </div>
+
           </motion.div>
 
         </div>
       </section>
 
+
+      {/* SIGNUP OFFER */}
       {showSignupOffer && (
         <SignupOffer
           onClose={() =>
