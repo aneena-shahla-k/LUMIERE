@@ -126,14 +126,15 @@ export default function PremiumHero() {
           requestAnimationFrame(() => {
             const video = videoRef.current;
 
-            if (
-              !video ||
-              !isVideoReadyRef.current ||
-              !Number.isFinite(video.duration) ||
-              video.duration <= 0
-            ) {
-              return;
-            }
+           if (
+            !video ||
+            !isVideoReadyRef.current ||
+            video.readyState < 2 ||
+            !Number.isFinite(video.duration) ||
+            video.duration <= 0
+          ) {
+            return;
+          }
 
             const progressValue =
               targetProgressRef.current;
@@ -223,14 +224,15 @@ export default function PremiumHero() {
               SCROLL CONTROLLED VIDEO
           -------------------------------- */}
           <video
-            ref={videoRef}
-            className="premium-hero__video"
-            muted
-            playsInline
-            preload="auto"
-            webkit-playsinline="true"
-            aria-hidden="true"
-          >
+  ref={videoRef}
+  className="premium-hero__video"
+  muted
+  autoPlay
+  playsInline
+  preload="auto"
+  webkit-playsinline="true"
+  aria-hidden="true"
+>
             <source
               src="/skin-animation.mp4"
               type="video/mp4"

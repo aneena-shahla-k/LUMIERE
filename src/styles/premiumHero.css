@@ -428,3 +428,11 @@
     height: 30px;
   }
 }
+.premium-hero__video {
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.premium-hero__video.is-ready {
+  opacity: 1;
+}
