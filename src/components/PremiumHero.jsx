@@ -793,25 +793,25 @@ export default function PremiumHero() {
   -------------------------------- */
 
   useEffect(() => {
-    return () => {
-      if (drawRAFRef.current) {
-        cancelAnimationFrame(
-          drawRAFRef.current
-        );
-      }
+  const images = imagesRef.current;
+  const loaded = loadedRef.current;
+  const loadingPromises =
+    loadingPromisesRef.current;
 
-      /*
-        Release image references when
-        component unmounts.
-      */
-      imagesRef.current.fill(null);
+  return () => {
+    if (drawRAFRef.current) {
+      cancelAnimationFrame(
+        drawRAFRef.current
+      );
 
-      loadedRef.current.clear();
+      drawRAFRef.current = null;
+    }
 
-      loadingPromisesRef.current.clear();
-    };
-  }, []);
-
+    images.fill(null);
+    loaded.clear();
+    loadingPromises.clear();
+  };
+}, []);
   /* --------------------------------
      LOADER
   -------------------------------- */
