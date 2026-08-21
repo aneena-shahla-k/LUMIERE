@@ -421,11 +421,14 @@ export default function PremiumHero() {
 
       /*
         Use cached canvas dimensions.
+
+        pixelRatio is intentionally not
+        destructured here because it is
+        read from currentSize below.
       */
       const {
         width,
         height,
-        pixelRatio,
       } = canvasSizeRef.current;
 
       if (width <= 0 || height <= 0) {
@@ -712,7 +715,9 @@ export default function PremiumHero() {
       };
 
       loadBatch();
-    }, [loadImage]);
+    },
+    [loadImage]
+  );
 
 
   /* --------------------------------
