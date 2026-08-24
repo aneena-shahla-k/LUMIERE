@@ -3,7 +3,7 @@ import { useScroll, useTransform, motion } from "framer-motion";
 import "../styles/premiumHero.css";
 import SignupOffer from "./SignupOffer";
 
-const TOTAL_FRAMES = 206;
+const TOTAL_FRAMES = 184;
 
 export default function PremiumHero() {
   const sectionRef = useRef(null);
