@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
-import { useScroll, useTransform, motion } from "framer-motion";
+// Added useSpring import
+import { useScroll, useTransform, motion, useSpring } from "framer-motion";
 import "../styles/premiumHero.css";
 import SignupOffer from "./SignupOffer";
 
@@ -15,14 +16,32 @@ export default function PremiumHero() {
   const [isReady, setIsReady] = useState(false);
   const [loadedCount, setLoadedCount] = useState(0);
   const [showSignupOffer, setShowSignupOffer] = useState(false);
+  const [isMobileDevice, setIsMobileDevice] = useState(false);
 
-  // Framer motion scroll tracking
+  // Client-side mobile detection to prevent SSR/hydration mismatch
+  useEffect(() => {
+    const isMobile = window.innerWidth < 768 || navigator.maxTouchPoints > 0;
+    setIsMobileDevice(isMobile);
+  }, []);
+
+  const frameStep = isMobileDevice ? 3 : 1;
+  const readyThreshold = isMobileDevice ? Math.ceil(20 / frameStep) : 20;
+
+  // 1. Get raw scroll progress
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start start", "end end"],
   });
 
-  const frameIndex = useTransform(scrollYProgress, [0, 1], [1, TOTAL_FRAMES]);
+  // 2. Smooth progress with physics-based spring physics
+  const smoothScrollYProgress = useSpring(scrollYProgress, {
+    stiffness: 75,
+    damping: 25,
+    restDelta: 0.001
+  });
+
+  // 3. Map smoothed scroll to frame indices
+  const frameIndex = useTransform(smoothScrollYProgress, [0, 1], [1, TOTAL_FRAMES]);
 
   // Clean Canvas Renderer
   const renderFrame = useCallback((index) => {
@@ -33,6 +52,7 @@ export default function PremiumHero() {
       cancelAnimationFrame(animFrameId.current);
     }
 
+    // Direct draw inside the RAF event loop for zero latency
     animFrameId.current = requestAnimationFrame(() => {
       const canvas = canvasRef.current;
       if (!canvas) return;
@@ -61,12 +81,18 @@ export default function PremiumHero() {
       if (!img || !img.complete || img.naturalWidth === 0) return;
 
       const rect = canvas.getBoundingClientRect();
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const isMobile = window.innerWidth < 768;
+      // Cap DPR to 1 on mobile to prevent GPU fill-rate lagging
+      const dpr = isMobile ? 1 : Math.min(window.devicePixelRatio || 1, 2);
 
       const displayWidth = Math.floor(rect.width);
       const displayHeight = Math.floor(rect.height);
 
-      if (
+      if (displayWidth === 0 || displayHeight === 0) {
+        // Safe dimensions fallback if container size hasn't calculated on mount yet
+        canvas.width = window.innerWidth * dpr;
+        canvas.height = window.innerHeight * dpr;
+      } else if (
         canvas.width !== displayWidth * dpr ||
         canvas.height !== displayHeight * dpr
       ) {
@@ -97,35 +123,128 @@ export default function PremiumHero() {
 
   // Preload all frames smoothly with no loop ESLint errors
   useEffect(() => {
-    const loadedImages = [];
-    let readyFired = false;
+    let isMounted = true;
+    const loadedImages = new Array(TOTAL_FRAMES);
     let loadedCounter = 0;
+    let readyFired = false;
 
-    const handleImageLoad = () => {
-      loadedCounter++;
-      // Update percentage loader for initial 25 frames only
-      if (loadedCounter <= 25) {
-        setLoadedCount(loadedCounter);
-      }
+    const isMobile = window.innerWidth < 768 || navigator.maxTouchPoints > 0;
+    const frameStep = isMobile ? 3 : 1;
 
-      // Ready trigger after first 20 frames loaded
-      if (loadedCounter >= 20 && !readyFired) {
+    const indicesToLoad = [];
+    for (let i = 0; i < TOTAL_FRAMES; i += frameStep) {
+      indicesToLoad.push(i);
+    }
+    if (!indicesToLoad.includes(TOTAL_FRAMES - 1)) {
+      indicesToLoad.push(TOTAL_FRAMES - 1);
+    }
+
+    const readyThreshold = isMobile ? Math.ceil(20 / frameStep) : 20;
+
+    const handleFirstFrameReady = () => {
+      if (!readyFired) {
         readyFired = true;
         setIsReady(true);
         renderFrame(1);
       }
     };
 
-    for (let i = 1; i <= TOTAL_FRAMES; i++) {
-      const paddedIndex = String(i).padStart(3, "0");
-      const img = new Image();
-      img.decoding = "async";
-      img.onload = handleImageLoad;
-      img.src = `/skin-frames/ezgif-frame-${paddedIndex}.webp`;
+    const loadImage = (index) => {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.decoding = "async";
+        const paddedIndex = String(index + 1).padStart(3, "0");
+        img.src = `/skin-frames/ezgif-frame-${paddedIndex}.webp`;
 
-      loadedImages.push(img);
-    }
+        img.onload = () => {
+          if (!isMounted) return resolve();
+
+          const handleLoaded = () => {
+            loadedImages[index] = img;
+            loadedCounter++;
+            
+            // Only update loading state for loader threshold
+            if (loadedCounter <= readyThreshold + 5) {
+              setLoadedCount(loadedCounter);
+            }
+
+            if (loadedCounter >= readyThreshold) {
+              handleFirstFrameReady();
+            }
+            resolve();
+          };
+
+          // ONLY pre-decode on Desktop to prevent browser tab crashes on low-GB mobile devices
+          if (!isMobile && typeof img.decode === 'function') {
+            img.decode()
+              .then(handleLoaded)
+              .catch(handleLoaded); // Fallback to normal loading if decode fails
+          } else {
+            handleLoaded();
+          }
+        };
+
+        img.onerror = () => {
+          if (!isMounted) return resolve();
+          loadedCounter++;
+          if (loadedCounter <= readyThreshold + 5) {
+            setLoadedCount(loadedCounter);
+          }
+          if (loadedCounter >= readyThreshold) {
+            handleFirstFrameReady();
+          }
+          resolve();
+        };
+      });
+    };
+
+    const loadInitialBatch = async () => {
+      const initialIndices = indicesToLoad.slice(0, readyThreshold);
+      const queue = [...initialIndices];
+      const concurrency = isMobile ? 3 : 5;
+
+      const worker = async () => {
+        while (queue.length > 0 && isMounted) {
+          const nextIndex = queue.shift();
+          if (nextIndex !== undefined) {
+            await loadImage(nextIndex);
+          }
+        }
+      };
+
+      const workers = Array.from({ length: concurrency }, () => worker());
+      await Promise.all(workers);
+
+      // Delay remaining frames slightly so page enters smoothly
+      if (isMounted) {
+        setTimeout(() => {
+          if (isMounted) {
+            loadRemainingFrames();
+          }
+        }, 800);
+      }
+    };
+
+    const loadRemainingFrames = async () => {
+      const remainingIndices = indicesToLoad.slice(readyThreshold);
+      const queue = [...remainingIndices];
+      const concurrency = isMobile ? 3 : 6;
+
+      const worker = async () => {
+        while (queue.length > 0 && isMounted) {
+          const nextIndex = queue.shift();
+          if (nextIndex !== undefined) {
+            await loadImage(nextIndex);
+          }
+        }
+      };
+
+      const workers = Array.from({ length: concurrency }, () => worker());
+      await Promise.all(workers);
+    };
+
     imagesRef.current = loadedImages;
+    loadInitialBatch();
 
     // Scroll listener on frameIndex
     const unsubscribe = frameIndex.on("change", (latest) => {
@@ -139,6 +258,7 @@ export default function PremiumHero() {
     window.addEventListener("resize", handleResize, { passive: true });
 
     return () => {
+      isMounted = false;
       unsubscribe();
       window.removeEventListener("resize", handleResize);
       if (animFrameId.current) cancelAnimationFrame(animFrameId.current);
@@ -161,7 +281,7 @@ export default function PremiumHero() {
   }, [isReady]);
 
   const loadingPercentage = Math.min(
-    Math.round((loadedCount / 20) * 100),
+    Math.round((loadedCount / readyThreshold) * 100),
     100
   );
 
