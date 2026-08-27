@@ -13,21 +13,24 @@ export default function PremiumHero() {
   const currentFrameRef = useRef(1);
   const lastDrawnFrameRef = useRef(-1);
 
-  // Cache dimensions to prevent layout thrashing on scroll
+  // High performance cache refs
   const canvasSizeRef = useRef({ width: 0, height: 0, dpr: 1 });
+  const pendingFrameIndexRef = useRef(null);
+  const lastDrawTimeRef = useRef(0);
 
   const [isReady, setIsReady] = useState(false);
   const [loadedCount, setLoadedCount] = useState(0);
   const [showSignupOffer, setShowSignupOffer] = useState(false);
   const [isMobileDevice, setIsMobileDevice] = useState(false);
 
-  // Client-side mobile detection to prevent SSR/hydration mismatch
+  // Client-side mobile detection
   useEffect(() => {
     const isMobile = window.innerWidth < 768 || navigator.maxTouchPoints > 0;
     setIsMobileDevice(isMobile);
   }, []);
 
-  const frameStep = isMobileDevice ? 3 : 1;
+  // AGGRESSIVE MOBILE OPTIMIZATION: Load only 37 frames on mobile to prevent VRAM lag
+  const frameStep = isMobileDevice ? 5 : 1;
   const readyThreshold = isMobileDevice ? Math.ceil(20 / frameStep) : 20;
 
   // 1. Get raw scroll progress
@@ -36,10 +39,10 @@ export default function PremiumHero() {
     offset: ["start start", "end end"],
   });
 
-  // 2. High-speed, low-lag spring physics (increased stiffness for instant response)
+  // 2. High-speed spring progress
   const smoothScrollYProgress = useSpring(scrollYProgress, {
-    stiffness: 140,  // Catches up to finger scroll instantly (feels faster)
-    damping: 30,     // Smooths out micro-jitters without delay
+    stiffness: 140, 
+    damping: 30,    
     restDelta: 0.001
   });
 
@@ -47,7 +50,7 @@ export default function PremiumHero() {
   const frameIndex = useTransform(smoothScrollYProgress, [0, 1], [1, TOTAL_FRAMES]);
 
   /* ================================
-     CANVAS SIZE SETUP (On Resize/Mount Only)
+     CANVAS SIZE SETUP (No layout thrashing)
   ================================ */
   const updateCanvasDimensions = useCallback(() => {
     const canvas = canvasRef.current;
@@ -76,75 +79,93 @@ export default function PremiumHero() {
   }, []);
 
   /* ================================
-     FAST CANVAS DRAWING
+     COALESCED DRAW CALLBACK (Eliminates GC closures & lag)
+  ================================ */
+  const drawCallback = useCallback(() => {
+    const targetIndex = pendingFrameIndexRef.current;
+    if (targetIndex === null) return;
+    pendingFrameIndexRef.current = null; // Clear pending
+
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const context = canvas.getContext("2d", { alpha: false });
+    if (!context) return;
+
+    // Find target image or fallback to nearest loaded frame
+    let img = imagesRef.current[targetIndex - 1];
+    if (!img || !img.complete || img.naturalWidth === 0) {
+      for (let dist = 1; dist < TOTAL_FRAMES; dist++) {
+        const prev = imagesRef.current[targetIndex - 1 - dist];
+        if (prev && prev.complete && prev.naturalWidth > 0) {
+          img = prev;
+          break;
+        }
+        const next = imagesRef.current[targetIndex - 1 + dist];
+        if (next && next.complete && next.naturalWidth > 0) {
+          img = next;
+          break;
+        }
+      }
+    }
+
+    if (!img || !img.complete || img.naturalWidth === 0) return;
+
+    let { width: canvasWidth, height: canvasHeight } = canvasSizeRef.current;
+    if (canvasWidth === 0 || canvasHeight === 0) {
+      updateCanvasDimensions();
+      ({ width: canvasWidth, height: canvasHeight } = canvasSizeRef.current);
+    }
+
+    if (canvasWidth === 0 || canvasHeight === 0) return;
+
+    // Cinematic Cover scale
+    const scale =
+      Math.max(
+        canvasWidth / img.naturalWidth,
+        canvasHeight / img.naturalHeight
+      ) * 1.03;
+
+    const drawWidth = img.naturalWidth * scale;
+    const drawHeight = img.naturalHeight * scale;
+
+    const offsetX = (canvasWidth - drawWidth) / 2;
+    const offsetY = (canvasHeight - drawHeight) / 2;
+
+    context.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+    
+    lastDrawnFrameRef.current = targetIndex;
+  }, [updateCanvasDimensions]);
+
+  /* ================================
+     RENDER INITIATION (With 30fps mobile throttle)
   ================================ */
   const renderFrame = useCallback((index) => {
     const targetIndex = Math.min(Math.max(Math.round(index), 1), TOTAL_FRAMES);
 
-    // Skip drawing if frame hasn't changed (saves 90% GPU rendering cycles)
+    // Skip drawing if frame hasn't changed
     if (targetIndex === lastDrawnFrameRef.current) return;
 
-    currentFrameRef.current = targetIndex;
-
-    if (animFrameId.current) {
-      cancelAnimationFrame(animFrameId.current);
+    // 30fps throttle on Mobile to let CPU decode images cleanly
+    const isMobile = window.innerWidth < 768 || navigator.maxTouchPoints > 0;
+    if (isMobile) {
+      const now = performance.now();
+      if (now - lastDrawTimeRef.current < 33) { // ~30fps max
+        return; 
+      }
+      lastDrawTimeRef.current = now;
     }
 
-    animFrameId.current = requestAnimationFrame(() => {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
+    currentFrameRef.current = targetIndex;
+    pendingFrameIndexRef.current = targetIndex;
 
-      const context = canvas.getContext("2d", { alpha: false });
-      if (!context) return;
-
-      // Find target image or fallback to nearest loaded frame
-      let img = imagesRef.current[targetIndex - 1];
-      if (!img || !img.complete || img.naturalWidth === 0) {
-        for (let dist = 1; dist < TOTAL_FRAMES; dist++) {
-          const prev = imagesRef.current[targetIndex - 1 - dist];
-          if (prev && prev.complete && prev.naturalWidth > 0) {
-            img = prev;
-            break;
-          }
-          const next = imagesRef.current[targetIndex - 1 + dist];
-          if (next && next.complete && next.naturalWidth > 0) {
-            img = next;
-            break;
-          }
-        }
-      }
-
-      if (!img || !img.complete || img.naturalWidth === 0) return;
-
-      // Get dimensions directly from RAM cache instead of forcing a DOM reflow
-      let { width: canvasWidth, height: canvasHeight } = canvasSizeRef.current;
-
-      if (canvasWidth === 0 || canvasHeight === 0) {
-        updateCanvasDimensions();
-        ({ width: canvasWidth, height: canvasHeight } = canvasSizeRef.current);
-      }
-
-      if (canvasWidth === 0 || canvasHeight === 0) return;
-
-      // Cinematic Cover scale
-      const scale =
-        Math.max(
-          canvasWidth / img.naturalWidth,
-          canvasHeight / img.naturalHeight
-        ) * 1.03;
-
-      const drawWidth = img.naturalWidth * scale;
-      const drawHeight = img.naturalHeight * scale;
-
-      const offsetX = (canvasWidth - drawWidth) / 2;
-      const offsetY = (canvasHeight - drawHeight) / 2;
-
-      // No clearRect needed; full cover redraws all pixels directly
-      context.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
-      
-      lastDrawnFrameRef.current = targetIndex;
-    });
-  }, [updateCanvasDimensions]);
+    if (!animFrameId.current) {
+      animFrameId.current = requestAnimationFrame(() => {
+        animFrameId.current = null;
+        drawCallback();
+      });
+    }
+  }, [drawCallback]);
 
   // Preload all frames smoothly with no loop ESLint errors
   useEffect(() => {
@@ -153,11 +174,10 @@ export default function PremiumHero() {
     let loadedCounter = 0;
     let readyFired = false;
 
-    // Run setup immediately on mount
     updateCanvasDimensions();
 
     const isMobile = window.innerWidth < 768 || navigator.maxTouchPoints > 0;
-    const frameStep = isMobile ? 3 : 1;
+    const frameStep = isMobile ? 5 : 1; // Load only 37 frames on mobile
 
     const indicesToLoad = [];
     for (let i = 0; i < TOTAL_FRAMES; i += frameStep) {
@@ -201,7 +221,7 @@ export default function PremiumHero() {
             resolve();
           };
 
-          // ONLY pre-decode on Desktop to prevent browser tab crashes on low-GB mobile devices
+          // ONLY pre-decode on Desktop to prevent crash on low-GB mobile devices
           if (!isMobile && typeof img.decode === 'function') {
             img.decode()
               .then(handleLoaded)
