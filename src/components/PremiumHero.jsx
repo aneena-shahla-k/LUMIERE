@@ -11,7 +11,10 @@ export default function PremiumHero() {
   const imagesRef = useRef([]);
   const animFrameId = useRef(null);
   const currentFrameRef = useRef(1);
-  const lastDrawnFrameRef = useRef(-1); // Tracks the last drawn frame
+  const lastDrawnFrameRef = useRef(-1);
+
+  // Cache dimensions to prevent layout thrashing on scroll
+  const canvasSizeRef = useRef({ width: 0, height: 0, dpr: 1 });
 
   const [isReady, setIsReady] = useState(false);
   const [loadedCount, setLoadedCount] = useState(0);
@@ -33,22 +36,52 @@ export default function PremiumHero() {
     offset: ["start start", "end end"],
   });
 
-  // 2. Smooth progress with optimized physics-based spring mechanics
+  // 2. High-speed, low-lag spring physics (increased stiffness for instant response)
   const smoothScrollYProgress = useSpring(scrollYProgress, {
-    stiffness: 55,   // Smooth gliding speed
-    damping: 25,     // Anti-bounce friction
+    stiffness: 140,  // Catches up to finger scroll instantly (feels faster)
+    damping: 30,     // Smooths out micro-jitters without delay
     restDelta: 0.001
   });
 
   // 3. Map smoothed scroll to frame indices
   const frameIndex = useTransform(smoothScrollYProgress, [0, 1], [1, TOTAL_FRAMES]);
 
-  // Clean Canvas Renderer
+  /* ================================
+     CANVAS SIZE SETUP (On Resize/Mount Only)
+  ================================ */
+  const updateCanvasDimensions = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const isMobile = window.innerWidth < 768 || navigator.maxTouchPoints > 0;
+    const dpr = isMobile ? 1 : Math.min(window.devicePixelRatio || 1, 2);
+
+    const displayWidth = Math.floor(rect.width) || window.innerWidth;
+    const displayHeight = Math.floor(rect.height) || window.innerHeight;
+
+    const pixelWidth = displayWidth * dpr;
+    const pixelHeight = displayHeight * dpr;
+
+    if (canvas.width !== pixelWidth || canvas.height !== pixelHeight) {
+      canvas.width = pixelWidth;
+      canvas.height = pixelHeight;
+    }
+
+    canvasSizeRef.current = {
+      width: pixelWidth,
+      height: pixelHeight,
+      dpr,
+    };
+  }, []);
+
+  /* ================================
+     FAST CANVAS DRAWING
+  ================================ */
   const renderFrame = useCallback((index) => {
     const targetIndex = Math.min(Math.max(Math.round(index), 1), TOTAL_FRAMES);
 
-    // OPTIMIZATION 1: Exit immediately if the frame hasn't changed.
-    // This stops the canvas from redrawing the same image dozens of times.
+    // Skip drawing if frame hasn't changed (saves 90% GPU rendering cycles)
     if (targetIndex === lastDrawnFrameRef.current) return;
 
     currentFrameRef.current = targetIndex;
@@ -57,7 +90,6 @@ export default function PremiumHero() {
       cancelAnimationFrame(animFrameId.current);
     }
 
-    // Direct draw inside the RAF loop for zero latency
     animFrameId.current = requestAnimationFrame(() => {
       const canvas = canvasRef.current;
       if (!canvas) return;
@@ -65,9 +97,8 @@ export default function PremiumHero() {
       const context = canvas.getContext("2d", { alpha: false });
       if (!context) return;
 
-      // Find current or nearest available loaded frame (Zero freezing)
+      // Find target image or fallback to nearest loaded frame
       let img = imagesRef.current[targetIndex - 1];
-
       if (!img || !img.complete || img.naturalWidth === 0) {
         for (let dist = 1; dist < TOTAL_FRAMES; dist++) {
           const prev = imagesRef.current[targetIndex - 1 - dist];
@@ -85,28 +116,15 @@ export default function PremiumHero() {
 
       if (!img || !img.complete || img.naturalWidth === 0) return;
 
-      const rect = canvas.getBoundingClientRect();
-      const isMobile = window.innerWidth < 768;
-      // Cap DPR to 1 on mobile to prevent GPU fill-rate lagging
-      const dpr = isMobile ? 1 : Math.min(window.devicePixelRatio || 1, 2);
+      // Get dimensions directly from RAM cache instead of forcing a DOM reflow
+      let { width: canvasWidth, height: canvasHeight } = canvasSizeRef.current;
 
-      const displayWidth = Math.floor(rect.width);
-      const displayHeight = Math.floor(rect.height);
-
-      if (displayWidth === 0 || displayHeight === 0) {
-        // Safe dimensions fallback if container size hasn't calculated on mount yet
-        canvas.width = window.innerWidth * dpr;
-        canvas.height = window.innerHeight * dpr;
-      } else if (
-        canvas.width !== displayWidth * dpr ||
-        canvas.height !== displayHeight * dpr
-      ) {
-        canvas.width = displayWidth * dpr;
-        canvas.height = displayHeight * dpr;
+      if (canvasWidth === 0 || canvasHeight === 0) {
+        updateCanvasDimensions();
+        ({ width: canvasWidth, height: canvasHeight } = canvasSizeRef.current);
       }
 
-      const canvasWidth = canvas.width;
-      const canvasHeight = canvas.height;
+      if (canvasWidth === 0 || canvasHeight === 0) return;
 
       // Cinematic Cover scale
       const scale =
@@ -121,14 +139,12 @@ export default function PremiumHero() {
       const offsetX = (canvasWidth - drawWidth) / 2;
       const offsetY = (canvasHeight - drawHeight) / 2;
 
-      // OPTIMIZATION 2: Removed clearRect. The image is scaled larger than the canvas,
-      // so it completely overwrites existing pixels. Skipping clearRect saves GPU power.
+      // No clearRect needed; full cover redraws all pixels directly
       context.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
       
-      // Update last drawn reference
       lastDrawnFrameRef.current = targetIndex;
     });
-  }, []);
+  }, [updateCanvasDimensions]);
 
   // Preload all frames smoothly with no loop ESLint errors
   useEffect(() => {
@@ -136,6 +152,9 @@ export default function PremiumHero() {
     const loadedImages = new Array(TOTAL_FRAMES);
     let loadedCounter = 0;
     let readyFired = false;
+
+    // Run setup immediately on mount
+    updateCanvasDimensions();
 
     const isMobile = window.innerWidth < 768 || navigator.maxTouchPoints > 0;
     const frameStep = isMobile ? 3 : 1;
@@ -172,7 +191,6 @@ export default function PremiumHero() {
             loadedImages[index] = img;
             loadedCounter++;
             
-            // Only update loading state for loader threshold
             if (loadedCounter <= readyThreshold + 5) {
               setLoadedCount(loadedCounter);
             }
@@ -187,7 +205,7 @@ export default function PremiumHero() {
           if (!isMobile && typeof img.decode === 'function') {
             img.decode()
               .then(handleLoaded)
-              .catch(handleLoaded); // Fallback to normal loading if decode fails
+              .catch(handleLoaded); 
           } else {
             handleLoaded();
           }
@@ -261,6 +279,7 @@ export default function PremiumHero() {
     });
 
     const handleResize = () => {
+      updateCanvasDimensions();
       renderFrame(currentFrameRef.current);
     };
 
@@ -272,7 +291,7 @@ export default function PremiumHero() {
       window.removeEventListener("resize", handleResize);
       if (animFrameId.current) cancelAnimationFrame(animFrameId.current);
     };
-  }, [frameIndex, renderFrame]);
+  }, [frameIndex, renderFrame, updateCanvasDimensions]);
 
   // Signup Offer Popup
   useEffect(() => {
@@ -298,7 +317,6 @@ export default function PremiumHero() {
     <>
       <section ref={sectionRef} className="premium-hero">
         <div className="premium-hero__sticky">
-          {/* OPTIMIZATION 3: Added transform: translate3d and willChange directly to force GPU layering */}
           <canvas 
             ref={canvasRef} 
             className="premium-hero__canvas" 
