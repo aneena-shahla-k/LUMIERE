@@ -1,7 +1,7 @@
 .premium-hero {
   position: relative;
   width: 100%;
-  height: 260vh; /* Reduced from 600vh for fast 90-frame transition */
+  height: 260vh;
   background: #11100e;
   contain: layout;
 }
@@ -10,7 +10,11 @@
   position: sticky;
   top: 0;
   width: 100%;
-  height: 100svh;
+  
+  /* Viewport height fallbacks to fix address bar / toolbar jump */
+  height: 100vh;
+  height: 100dvh;
+
   overflow: hidden;
   background: #11100e;
   transform: translateZ(0);
@@ -20,7 +24,8 @@
 
 .premium-hero__canvas {
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   display: block;
@@ -241,11 +246,12 @@
 
 @media (max-width: 768px) {
   .premium-hero {
-    height: 200vh; /* Reduced from 500vh */
+    height: 200vh;
   }
 
   .premium-hero__sticky {
-    height: 100svh;
+    height: 100vh;
+    height: 100dvh;
   }
 
   .premium-hero__overlay {
