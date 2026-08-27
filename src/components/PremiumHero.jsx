@@ -18,12 +18,12 @@ import SignupOffer from "./SignupOffer";
    CONFIG
 ========================================================= */
 
-const TOTAL_FRAMES = 90;
+const TOTAL_FRAMES = 35;
 
 const FRAME_PATH = (frameNumber) => {
   const paddedNumber = String(frameNumber).padStart(3, "0");
 
-  return `/skin-frames/ezgif-frame-${paddedNumber}.webp`;
+  return `/skin/ezgif-frame-${paddedNumber}.webp`;
 };
 
 /* =========================================================
