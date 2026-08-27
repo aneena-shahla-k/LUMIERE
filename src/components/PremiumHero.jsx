@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
-// Added useSpring import
 import { useScroll, useTransform, motion, useSpring } from "framer-motion";
 import "../styles/premiumHero.css";
 import SignupOffer from "./SignupOffer";
@@ -12,6 +11,7 @@ export default function PremiumHero() {
   const imagesRef = useRef([]);
   const animFrameId = useRef(null);
   const currentFrameRef = useRef(1);
+  const lastDrawnFrameRef = useRef(-1); // Tracks the last drawn frame
 
   const [isReady, setIsReady] = useState(false);
   const [loadedCount, setLoadedCount] = useState(0);
@@ -33,10 +33,10 @@ export default function PremiumHero() {
     offset: ["start start", "end end"],
   });
 
-  // 2. Smooth progress with physics-based spring physics
+  // 2. Smooth progress with optimized physics-based spring mechanics
   const smoothScrollYProgress = useSpring(scrollYProgress, {
-    stiffness: 75,
-    damping: 25,
+    stiffness: 55,   // Smooth gliding speed
+    damping: 25,     // Anti-bounce friction
     restDelta: 0.001
   });
 
@@ -46,13 +46,18 @@ export default function PremiumHero() {
   // Clean Canvas Renderer
   const renderFrame = useCallback((index) => {
     const targetIndex = Math.min(Math.max(Math.round(index), 1), TOTAL_FRAMES);
+
+    // OPTIMIZATION 1: Exit immediately if the frame hasn't changed.
+    // This stops the canvas from redrawing the same image dozens of times.
+    if (targetIndex === lastDrawnFrameRef.current) return;
+
     currentFrameRef.current = targetIndex;
 
     if (animFrameId.current) {
       cancelAnimationFrame(animFrameId.current);
     }
 
-    // Direct draw inside the RAF event loop for zero latency
+    // Direct draw inside the RAF loop for zero latency
     animFrameId.current = requestAnimationFrame(() => {
       const canvas = canvasRef.current;
       if (!canvas) return;
@@ -116,8 +121,12 @@ export default function PremiumHero() {
       const offsetX = (canvasWidth - drawWidth) / 2;
       const offsetY = (canvasHeight - drawHeight) / 2;
 
-      context.clearRect(0, 0, canvasWidth, canvasHeight);
+      // OPTIMIZATION 2: Removed clearRect. The image is scaled larger than the canvas,
+      // so it completely overwrites existing pixels. Skipping clearRect saves GPU power.
       context.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+      
+      // Update last drawn reference
+      lastDrawnFrameRef.current = targetIndex;
     });
   }, []);
 
@@ -289,7 +298,12 @@ export default function PremiumHero() {
     <>
       <section ref={sectionRef} className="premium-hero">
         <div className="premium-hero__sticky">
-          <canvas ref={canvasRef} className="premium-hero__canvas" />
+          {/* OPTIMIZATION 3: Added transform: translate3d and willChange directly to force GPU layering */}
+          <canvas 
+            ref={canvasRef} 
+            className="premium-hero__canvas" 
+            style={{ transform: "translate3d(0,0,0)", willChange: "transform" }}
+          />
 
           <div className="premium-hero__overlay" />
 
