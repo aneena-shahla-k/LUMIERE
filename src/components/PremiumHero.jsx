@@ -151,7 +151,7 @@ export default function PremiumHero() {
         const img = new Image();
         img.decoding = "async";
         const paddedIndex = String(targetIndex).padStart(3, "0");
-        img.src = `/skin-fr/ezgif-frame-${paddedIndex}.webp`;
+        img.src = `/skin-frames/ezgif-frame-${paddedIndex}.webp`;
         
         img.onload = () => {
           // If the scroll position is still close to this frame, render it
@@ -197,7 +197,7 @@ export default function PremiumHero() {
     const loadFirstFrame = async () => {
       const img = new Image();
       img.decoding = "async";
-      img.src = `/skin-fr/ezgif-frame-001.webp`;
+      img.src = `/skin-frames/ezgif-frame-001.webp`;
       img.onload = () => {
         if (!isMounted) return;
         loadedImages[0] = img;
@@ -241,7 +241,7 @@ export default function PremiumHero() {
         const img = new Image();
         img.decoding = "async";
         const paddedIndex = String(index + 1).padStart(3, "0");
-        img.src = `/skin-fr/ezgif-frame-${paddedIndex}.webp`;
+        img.src = `/skin-frames/ezgif-frame-${paddedIndex}.webp`;
 
         img.onload = () => {
           if (!isMounted) return resolve();
