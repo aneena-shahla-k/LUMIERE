@@ -35,10 +35,10 @@ export default function PremiumHero() {
     offset: ["start start", "end end"],
   });
 
-  // 2. High-speed spring progress
+  // 2. High-speed, responsive spring (tuned to eliminate delay)
   const smoothScrollYProgress = useSpring(scrollYProgress, {
-    stiffness: 140, 
-    damping: 30,    
+    stiffness: 400, 
+    damping: 40,    
     restDelta: 0.001
   });
 
@@ -46,7 +46,7 @@ export default function PremiumHero() {
   const frameIndex = useTransform(smoothScrollYProgress, [0, 1], [1, TOTAL_FRAMES]);
 
   /* ================================
-     CANVAS SIZE SETUP (No layout thrashing)
+     CANVAS SIZE SETUP
   ================================ */
   const updateCanvasDimensions = useCallback(() => {
     const canvas = canvasRef.current;
@@ -80,7 +80,7 @@ export default function PremiumHero() {
   const drawCallback = useCallback(() => {
     const targetIndex = pendingFrameIndexRef.current;
     if (targetIndex === null) return;
-    pendingFrameIndexRef.current = null; // Clear pending
+    pendingFrameIndexRef.current = null;
 
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -134,17 +134,15 @@ export default function PremiumHero() {
   }, [updateCanvasDimensions]);
 
   /* ================================
-     RENDER INITIATION (With Mobile Lazy Load & 30fps throttle)
+     RENDER INITIATION
   ================================ */
   const renderFrame = useCallback((index) => {
     const targetIndex = Math.min(Math.max(Math.round(index), 1), TOTAL_FRAMES);
 
-    // Skip drawing if frame hasn't changed
     if (targetIndex === lastDrawnFrameRef.current) return;
 
     const isMobile = window.innerWidth < 768 || navigator.maxTouchPoints > 0;
 
-    // MOBILE LAZY LOADING: Only trigger image loads when scrolled to
     if (isMobile) {
       const imgIndex = targetIndex - 1;
       if (!imagesRef.current[imgIndex]) {
@@ -154,17 +152,13 @@ export default function PremiumHero() {
         img.src = `/skin-frames/ezgif-frame-${paddedIndex}.webp`;
         
         img.onload = () => {
-          // If the scroll position is still close to this frame, render it
           if (Math.abs(currentFrameRef.current - targetIndex) <= 8) {
             renderFrame(currentFrameRef.current);
           }
         };
         imagesRef.current[imgIndex] = img;
       }
-    }
 
-    // 30fps throttle on Mobile to let CPU decode images cleanly
-    if (isMobile) {
       const now = performance.now();
       if (now - lastDrawTimeRef.current < 33) { 
         return; 
@@ -183,7 +177,7 @@ export default function PremiumHero() {
     }
   }, [drawCallback]);
 
-  // Preload logic: Load first frame instantly, preload others on Desktop only
+  // Preload logic
   useEffect(() => {
     let isMounted = true;
     const loadedImages = new Array(TOTAL_FRAMES);
@@ -193,7 +187,6 @@ export default function PremiumHero() {
 
     const isMobile = window.innerWidth < 768 || navigator.maxTouchPoints > 0;
 
-    // Load first frame immediately to make site ready
     const loadFirstFrame = async () => {
       const img = new Image();
       img.decoding = "async";
@@ -204,7 +197,6 @@ export default function PremiumHero() {
         setIsReady(true);
         renderFrame(1);
         
-        // Start background download ONLY on Desktop
         if (!isMobile) {
           preloadDesktopFrames();
         }
@@ -273,7 +265,6 @@ export default function PremiumHero() {
     imagesRef.current = loadedImages;
     loadFirstFrame();
 
-    // Scroll listener on frameIndex
     const unsubscribe = frameIndex.on("change", (latest) => {
       renderFrame(latest);
     });
@@ -308,7 +299,6 @@ export default function PremiumHero() {
     return () => clearTimeout(timer);
   }, [isReady]);
 
-  // Mobile gets instant 100% loader once Frame 1 renders; Desktop counts background load
   const loadingPercentage = isMobileDevice 
     ? (isReady ? 100 : 0)
     : Math.min(Math.round((loadedCount / 20) * 100), 100);
