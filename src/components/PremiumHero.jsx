@@ -3,7 +3,7 @@ import { useScroll, useTransform, motion, useSpring } from "framer-motion";
 import "../styles/premiumHero.css";
 import SignupOffer from "./SignupOffer";
 
-const TOTAL_FRAMES = 184;
+const TOTAL_FRAMES = 90;
 
 export default function PremiumHero() {
   const sectionRef = useRef(null);
@@ -28,10 +28,6 @@ export default function PremiumHero() {
     const isMobile = window.innerWidth < 768 || navigator.maxTouchPoints > 0;
     setIsMobileDevice(isMobile);
   }, []);
-
-  // AGGRESSIVE MOBILE OPTIMIZATION: Load only 37 frames on mobile to prevent VRAM lag
-  const frameStep = isMobileDevice ? 5 : 1;
-  const readyThreshold = isMobileDevice ? Math.ceil(20 / frameStep) : 20;
 
   // 1. Get raw scroll progress
   const { scrollYProgress } = useScroll({
@@ -79,7 +75,7 @@ export default function PremiumHero() {
   }, []);
 
   /* ================================
-     COALESCED DRAW CALLBACK (Eliminates GC closures & lag)
+     COALESCED DRAW CALLBACK
   ================================ */
   const drawCallback = useCallback(() => {
     const targetIndex = pendingFrameIndexRef.current;
@@ -138,7 +134,7 @@ export default function PremiumHero() {
   }, [updateCanvasDimensions]);
 
   /* ================================
-     RENDER INITIATION (With 30fps mobile throttle)
+     RENDER INITIATION (With Mobile Lazy Load & 30fps throttle)
   ================================ */
   const renderFrame = useCallback((index) => {
     const targetIndex = Math.min(Math.max(Math.round(index), 1), TOTAL_FRAMES);
@@ -146,11 +142,31 @@ export default function PremiumHero() {
     // Skip drawing if frame hasn't changed
     if (targetIndex === lastDrawnFrameRef.current) return;
 
-    // 30fps throttle on Mobile to let CPU decode images cleanly
     const isMobile = window.innerWidth < 768 || navigator.maxTouchPoints > 0;
+
+    // MOBILE LAZY LOADING: Only trigger image loads when scrolled to
+    if (isMobile) {
+      const imgIndex = targetIndex - 1;
+      if (!imagesRef.current[imgIndex]) {
+        const img = new Image();
+        img.decoding = "async";
+        const paddedIndex = String(targetIndex).padStart(3, "0");
+        img.src = `/skin-fr/ezgif-frame-${paddedIndex}.webp`;
+        
+        img.onload = () => {
+          // If the scroll position is still close to this frame, render it
+          if (Math.abs(currentFrameRef.current - targetIndex) <= 8) {
+            renderFrame(currentFrameRef.current);
+          }
+        };
+        imagesRef.current[imgIndex] = img;
+      }
+    }
+
+    // 30fps throttle on Mobile to let CPU decode images cleanly
     if (isMobile) {
       const now = performance.now();
-      if (now - lastDrawTimeRef.current < 33) { // ~30fps max
+      if (now - lastDrawTimeRef.current < 33) { 
         return; 
       }
       lastDrawTimeRef.current = now;
@@ -167,131 +183,95 @@ export default function PremiumHero() {
     }
   }, [drawCallback]);
 
-  // Preload all frames smoothly with no loop ESLint errors
+  // Preload logic: Load first frame instantly, preload others on Desktop only
   useEffect(() => {
     let isMounted = true;
     const loadedImages = new Array(TOTAL_FRAMES);
     let loadedCounter = 0;
-    let readyFired = false;
 
     updateCanvasDimensions();
 
     const isMobile = window.innerWidth < 768 || navigator.maxTouchPoints > 0;
-    const frameStep = isMobile ? 5 : 1; // Load only 37 frames on mobile
 
-    const indicesToLoad = [];
-    for (let i = 0; i < TOTAL_FRAMES; i += frameStep) {
-      indicesToLoad.push(i);
-    }
-    if (!indicesToLoad.includes(TOTAL_FRAMES - 1)) {
-      indicesToLoad.push(TOTAL_FRAMES - 1);
-    }
-
-    const readyThreshold = isMobile ? Math.ceil(20 / frameStep) : 20;
-
-    const handleFirstFrameReady = () => {
-      if (!readyFired) {
-        readyFired = true;
+    // Load first frame immediately to make site ready
+    const loadFirstFrame = async () => {
+      const img = new Image();
+      img.decoding = "async";
+      img.src = `/skin-fr/ezgif-frame-001.webp`;
+      img.onload = () => {
+        if (!isMounted) return;
+        loadedImages[0] = img;
         setIsReady(true);
         renderFrame(1);
-      }
+        
+        // Start background download ONLY on Desktop
+        if (!isMobile) {
+          preloadDesktopFrames();
+        }
+      };
+      img.onerror = () => {
+        if (!isMounted) return;
+        setIsReady(true);
+        if (!isMobile) {
+          preloadDesktopFrames();
+        }
+      };
+      loadedImages[0] = img;
     };
 
-    const loadImage = (index) => {
+    const preloadDesktopFrames = async () => {
+      const queue = Array.from({ length: TOTAL_FRAMES - 1 }, (_, i) => i + 1);
+      const concurrency = 6;
+
+      const worker = async () => {
+        while (queue.length > 0 && isMounted) {
+          const nextIndex = queue.shift();
+          if (nextIndex !== undefined) {
+            await loadSingleFrame(nextIndex);
+          }
+        }
+      };
+
+      const workers = Array.from({ length: concurrency }, () => worker());
+      await Promise.all(workers);
+    };
+
+    const loadSingleFrame = (index) => {
       return new Promise((resolve) => {
         const img = new Image();
         img.decoding = "async";
         const paddedIndex = String(index + 1).padStart(3, "0");
-        img.src = `/skin-frames/ezgif-frame-${paddedIndex}.webp`;
+        img.src = `/skin-fr/ezgif-frame-${paddedIndex}.webp`;
 
         img.onload = () => {
           if (!isMounted) return resolve();
-
-          const handleLoaded = () => {
-            loadedImages[index] = img;
-            loadedCounter++;
-            
-            if (loadedCounter <= readyThreshold + 5) {
+          img.decode()
+            .then(() => {
+              if (!isMounted) return;
+              loadedImages[index] = img;
+              loadedCounter++;
               setLoadedCount(loadedCounter);
-            }
-
-            if (loadedCounter >= readyThreshold) {
-              handleFirstFrameReady();
-            }
-            resolve();
-          };
-
-          // ONLY pre-decode on Desktop to prevent crash on low-GB mobile devices
-          if (!isMobile && typeof img.decode === 'function') {
-            img.decode()
-              .then(handleLoaded)
-              .catch(handleLoaded); 
-          } else {
-            handleLoaded();
-          }
+            })
+            .catch(() => {
+              if (!isMounted) return;
+              loadedImages[index] = img;
+              loadedCounter++;
+              setLoadedCount(loadedCounter);
+            })
+            .finally(() => {
+              resolve();
+            });
         };
 
         img.onerror = () => {
           if (!isMounted) return resolve();
-          loadedCounter++;
-          if (loadedCounter <= readyThreshold + 5) {
-            setLoadedCount(loadedCounter);
-          }
-          if (loadedCounter >= readyThreshold) {
-            handleFirstFrameReady();
-          }
           resolve();
         };
       });
     };
 
-    const loadInitialBatch = async () => {
-      const initialIndices = indicesToLoad.slice(0, readyThreshold);
-      const queue = [...initialIndices];
-      const concurrency = isMobile ? 3 : 5;
-
-      const worker = async () => {
-        while (queue.length > 0 && isMounted) {
-          const nextIndex = queue.shift();
-          if (nextIndex !== undefined) {
-            await loadImage(nextIndex);
-          }
-        }
-      };
-
-      const workers = Array.from({ length: concurrency }, () => worker());
-      await Promise.all(workers);
-
-      // Delay remaining frames slightly so page enters smoothly
-      if (isMounted) {
-        setTimeout(() => {
-          if (isMounted) {
-            loadRemainingFrames();
-          }
-        }, 800);
-      }
-    };
-
-    const loadRemainingFrames = async () => {
-      const remainingIndices = indicesToLoad.slice(readyThreshold);
-      const queue = [...remainingIndices];
-      const concurrency = isMobile ? 3 : 6;
-
-      const worker = async () => {
-        while (queue.length > 0 && isMounted) {
-          const nextIndex = queue.shift();
-          if (nextIndex !== undefined) {
-            await loadImage(nextIndex);
-          }
-        }
-      };
-
-      const workers = Array.from({ length: concurrency }, () => worker());
-      await Promise.all(workers);
-    };
-
     imagesRef.current = loadedImages;
-    loadInitialBatch();
+    loadFirstFrame();
 
     // Scroll listener on frameIndex
     const unsubscribe = frameIndex.on("change", (latest) => {
@@ -328,10 +308,10 @@ export default function PremiumHero() {
     return () => clearTimeout(timer);
   }, [isReady]);
 
-  const loadingPercentage = Math.min(
-    Math.round((loadedCount / readyThreshold) * 100),
-    100
-  );
+  // Mobile gets instant 100% loader once Frame 1 renders; Desktop counts background load
+  const loadingPercentage = isMobileDevice 
+    ? (isReady ? 100 : 0)
+    : Math.min(Math.round((loadedCount / 20) * 100), 100);
 
   return (
     <>
