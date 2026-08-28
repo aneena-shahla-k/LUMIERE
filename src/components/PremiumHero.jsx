@@ -284,175 +284,80 @@ export default function PremiumHero() {
   ========================================================= */
 
   const drawFrame = useCallback(
-    (frameValue) => {
-      const canvas =
-        canvasRef.current;
+  (frameValue) => {
+    const canvas = canvasRef.current;
+    const context = contextRef.current;
 
-      const context =
-        contextRef.current;
+    if (!canvas || !context) return;
 
-      if (
-        !canvas ||
-        !context
-      ) {
-        return;
-      }
+    const {
+      width: canvasWidth,
+      height: canvasHeight,
+    } = canvasSizeRef.current;
 
-      const {
-        width: canvasWidth,
-        height: canvasHeight,
-      } =
-        canvasSizeRef.current;
+    if (canvasWidth <= 0 || canvasHeight <= 0) {
+      return;
+    }
 
-      if (
-        canvasWidth <= 0 ||
-        canvasHeight <= 0
-      ) {
-        return;
-      }
+    const value = clamp(
+      frameValue,
+      1,
+      TOTAL_FRAMES
+    );
 
-      /*
-        Keep fractional value.
-      */
+    const frameNumber = Math.round(value);
 
-      const value = clamp(
-        frameValue,
-        1,
-        TOTAL_FRAMES
-      );
+    const image =
+      imagesRef.current[frameNumber - 1];
 
-      /*
-        Example:
+    /*
+      If requested frame isn't ready,
+      DON'T clear the canvas.
+    */
 
-        value = 10.35
+    if (
+      !image ||
+      !image.complete ||
+      image.naturalWidth <= 0
+    ) {
+      return;
+    }
 
-        lowerFrame = 10
-        upperFrame = 11
-        progress = 0.35
-      */
+    /*
+      Clear only AFTER we know
+      the new image is ready.
+    */
 
-      const lowerFrame =
-        Math.floor(value);
+    context.globalAlpha = 1;
 
-      const upperFrame =
-        Math.min(
-          lowerFrame + 1,
-          TOTAL_FRAMES
-        );
+    context.fillStyle = "#11100e";
 
-      const progress =
-        value -
-        lowerFrame;
+    context.fillRect(
+      0,
+      0,
+      canvasWidth,
+      canvasHeight
+    );
 
-      const image1 =
-        imagesRef.current[
-          lowerFrame - 1
-        ];
+    /*
+      Draw the complete frame.
+    */
 
-      const image2 =
-        imagesRef.current[
-          upperFrame - 1
-        ];
+    drawImage(
+      context,
+      image,
+      1,
+      canvasWidth,
+      canvasHeight
+    );
 
-      if (
-        !image1 ||
-        !image1.complete ||
-        image1.naturalWidth <= 0
-      ) {
-        return;
-      }
+    context.globalAlpha = 1;
 
-      /*
-        Clear / background
-      */
-
-      context.globalAlpha = 1;
-
-      context.fillStyle =
-        "#11100e";
-
-      context.fillRect(
-        0,
-        0,
-        canvasWidth,
-        canvasHeight
-      );
-
-      /*
-        SAME FRAME
-      */
-
-      if (
-        lowerFrame ===
-        upperFrame
-      ) {
-        drawImage(
-          context,
-          image1,
-          1,
-          canvasWidth,
-          canvasHeight
-        );
-      } else {
-        /*
-          FRAME BLENDING
-
-          Frame 10:
-          65%
-
-          Frame 11:
-          35%
-        */
-
-        drawImage(
-          context,
-          image1,
-          1 - progress,
-          canvasWidth,
-          canvasHeight
-        );
-
-        /*
-          Only blend if next frame
-          is available.
-        */
-
-        if (
-          image2 &&
-          image2.complete &&
-          image2.naturalWidth > 0
-        ) {
-          drawImage(
-            context,
-            image2,
-            progress,
-            canvasWidth,
-            canvasHeight
-          );
-        } else {
-          /*
-            If next image isn't ready,
-            keep current image.
-          */
-
-          drawImage(
-            context,
-            image1,
-            1,
-            canvasWidth,
-            canvasHeight
-          );
-        }
-      }
-
-      context.globalAlpha = 1;
-
-      lastDrawnValueRef.current =
-        value;
-    },
-    [drawImage]
-  );
-
+    lastDrawnValueRef.current =
+      frameNumber;
+  },
+  [drawImage]
+);
   /* =========================================================
      REQUEST RENDER
   ========================================================= */
