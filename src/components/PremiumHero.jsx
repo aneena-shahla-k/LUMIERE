@@ -34,6 +34,10 @@ const clamp = (value, min, max) => {
   return Math.min(Math.max(value, min), max);
 };
 
+/* =========================================================
+   COMPONENT
+========================================================= */
+
 export default function PremiumHero() {
   const sectionRef = useRef(null);
   const canvasRef = useRef(null);
@@ -51,8 +55,6 @@ export default function PremiumHero() {
     height: 0,
     dpr: 1,
   });
-
-  const lastMobileDrawTimeRef = useRef(0);
 
   const [isReady, setIsReady] = useState(false);
   const [loadedCount, setLoadedCount] = useState(0);
@@ -81,14 +83,7 @@ export default function PremiumHero() {
   }, []);
 
   /* =========================================================
-     SCROLL PROGRESS
-     
-     IMPORTANT:
-     NO useSpring here.
-
-     Direct scroll progress means the final frame reaches
-     the actual end of the sticky section without trailing
-     spring movement.
+     SCROLL
   ========================================================= */
 
   const { scrollYProgress } = useScroll({
@@ -97,20 +92,19 @@ export default function PremiumHero() {
   });
 
   /*
-    Direct 1 → TOTAL_FRAMES mapping.
-
-    The animation is made slow by the section height in CSS,
-    NOT by delaying the scroll value with a spring.
+    Full scroll range:
+    0%   → frame 1
+    100% → frame 35
   */
 
-const frameProgress = useTransform(
-  scrollYProgress,
-  [0, 0.92],
-  [1, TOTAL_FRAMES],
-  {
-    clamp: true,
-  }
-);
+  const frameProgress = useTransform(
+    scrollYProgress,
+    [0, 1],
+    [1, TOTAL_FRAMES],
+    {
+      clamp: true,
+    }
+  );
 
   /* =========================================================
      CANVAS DIMENSIONS
@@ -123,38 +117,29 @@ const frameProgress = useTransform(
 
     const rect = canvas.getBoundingClientRect();
 
-    const mobile =
-      window.innerWidth <= 768;
+    const mobile = window.innerWidth <= 768;
 
     /*
-      Mobile uses DPR 1 for better performance.
-      Desktop max DPR 2.
+      Mobile = DPR 1
+      Desktop = max DPR 2
     */
 
     const dpr = mobile
       ? 1
-      : Math.min(
-          window.devicePixelRatio || 1,
-          2
-        );
+      : Math.min(window.devicePixelRatio || 1, 2);
 
-    const width =
-      Math.max(
-        1,
-        Math.floor(rect.width)
-      );
+    const width = Math.max(
+      1,
+      Math.floor(rect.width)
+    );
 
-    const height =
-      Math.max(
-        1,
-        Math.floor(rect.height)
-      );
+    const height = Math.max(
+      1,
+      Math.floor(rect.height)
+    );
 
-    const pixelWidth =
-      Math.floor(width * dpr);
-
-    const pixelHeight =
-      Math.floor(height * dpr);
+    const pixelWidth = Math.floor(width * dpr);
+    const pixelHeight = Math.floor(height * dpr);
 
     if (
       canvas.width !== pixelWidth ||
@@ -172,73 +157,20 @@ const frameProgress = useTransform(
   }, []);
 
   /* =========================================================
-     GET NEAREST LOADED IMAGE
+     GET LOADED IMAGE
   ========================================================= */
 
   const getLoadedImage = useCallback(
     (frameNumber) => {
-      const exactImage =
-        imagesRef.current[
-          frameNumber - 1
-        ];
+      const image =
+        imagesRef.current[frameNumber - 1];
 
       if (
-        exactImage &&
-        exactImage.complete &&
-        exactImage.naturalWidth > 0
+        image &&
+        image.complete &&
+        image.naturalWidth > 0
       ) {
-        return exactImage;
-      }
-
-      /*
-        Find nearest already-loaded frame.
-
-        This prevents blank frames while the user scrolls
-        faster than images can load.
-      */
-
-      for (
-        let distance = 1;
-        distance < TOTAL_FRAMES;
-        distance++
-      ) {
-        const previousFrame =
-          frameNumber - distance;
-
-        if (previousFrame >= 1) {
-          const previousImage =
-            imagesRef.current[
-              previousFrame - 1
-            ];
-
-          if (
-            previousImage &&
-            previousImage.complete &&
-            previousImage.naturalWidth > 0
-          ) {
-            return previousImage;
-          }
-        }
-
-        const nextFrame =
-          frameNumber + distance;
-
-        if (
-          nextFrame <= TOTAL_FRAMES
-        ) {
-          const nextImage =
-            imagesRef.current[
-              nextFrame - 1
-            ];
-
-          if (
-            nextImage &&
-            nextImage.complete &&
-            nextImage.naturalWidth > 0
-          ) {
-            return nextImage;
-          }
-        }
+        return image;
       }
 
       return null;
@@ -256,16 +188,14 @@ const frameProgress = useTransform(
 
       if (!canvas) return;
 
-      const context =
-        canvas.getContext("2d", {
-          alpha: false,
-          desynchronized: true,
-        });
+      const context = canvas.getContext("2d", {
+        alpha: false,
+        desynchronized: true,
+      });
 
       if (!context) return;
 
-      const image =
-        getLoadedImage(frameNumber);
+      const image = getLoadedImage(frameNumber);
 
       if (!image) return;
 
@@ -282,7 +212,7 @@ const frameProgress = useTransform(
       }
 
       /*
-        Premium cinematic cover.
+        Cover scaling.
 
         Slight 1.03 scale prevents tiny edges
         from appearing on different screen ratios.
@@ -290,11 +220,8 @@ const frameProgress = useTransform(
 
       const scale =
         Math.max(
-          canvasWidth /
-            image.naturalWidth,
-
-          canvasHeight /
-            image.naturalHeight
+          canvasWidth / image.naturalWidth,
+          canvasHeight / image.naturalHeight
         ) * 1.03;
 
       const drawWidth =
@@ -310,7 +237,7 @@ const frameProgress = useTransform(
         (canvasHeight - drawHeight) / 2;
 
       /*
-        Background first.
+        Background
       */
 
       context.fillStyle = "#11100e";
@@ -321,6 +248,10 @@ const frameProgress = useTransform(
         canvasWidth,
         canvasHeight
       );
+
+      /*
+        Draw image
+      */
 
       context.drawImage(
         image,
@@ -352,7 +283,7 @@ const frameProgress = useTransform(
         frameNumber;
 
       /*
-        Same frame = nothing to do.
+        Don't redraw same frame.
       */
 
       if (
@@ -362,35 +293,14 @@ const frameProgress = useTransform(
         return;
       }
 
-      /*
-        Mobile canvas drawing is limited to roughly
-        30fps. This keeps scrolling responsive.
-      */
-
-      if (
-        window.innerWidth <= 768
-      ) {
-        const now =
-          performance.now();
-
-        if (
-          now -
-            lastMobileDrawTimeRef.current <
-          30
-        ) {
-          return;
-        }
-
-        lastMobileDrawTimeRef.current =
-          now;
-      }
-
       pendingFrameRef.current =
         frameNumber;
 
-      if (
-        animationFrameRef.current
-      ) {
+      /*
+        Already waiting for animation frame.
+      */
+
+      if (animationFrameRef.current) {
         return;
       }
 
@@ -405,9 +315,7 @@ const frameProgress = useTransform(
           pendingFrameRef.current =
             null;
 
-          if (
-            pending === null
-          ) {
+          if (pending === null) {
             return;
           }
 
@@ -418,7 +326,7 @@ const frameProgress = useTransform(
   );
 
   /* =========================================================
-     FRAME PROGRESS LISTENER
+     SCROLL → FRAME
   ========================================================= */
 
   useEffect(() => {
@@ -426,6 +334,8 @@ const frameProgress = useTransform(
       frameProgress.on(
         "change",
         (latest) => {
+          if (!isReady) return;
+
           renderFrame(latest);
         }
       );
@@ -434,10 +344,11 @@ const frameProgress = useTransform(
   }, [
     frameProgress,
     renderFrame,
+    isReady,
   ]);
 
   /* =========================================================
-     IMAGE PRELOADING
+     PRELOAD ALL FRAMES
   ========================================================= */
 
   useEffect(() => {
@@ -452,13 +363,13 @@ const frameProgress = useTransform(
     let loaded = 0;
 
     /* -------------------------------------------------------
-       LOAD ONE IMAGE
+       LOAD IMAGE
     ------------------------------------------------------- */
 
     const loadImage = (frameNumber) => {
       return new Promise((resolve) => {
         if (!mounted) {
-          resolve();
+          resolve(false);
           return;
         }
 
@@ -467,17 +378,27 @@ const frameProgress = useTransform(
 
         image.decoding = "async";
 
+        /*
+          Optional browser hint.
+        */
+
+        image.fetchPriority =
+          frameNumber === 1
+            ? "high"
+            : "auto";
+
         image.src =
           FRAME_PATH(frameNumber);
 
         image.onload = async () => {
           if (!mounted) {
-            resolve();
+            resolve(false);
             return;
           }
 
           /*
-            Decode if possible.
+            Decode before considering
+            the frame ready.
           */
 
           try {
@@ -487,12 +408,11 @@ const frameProgress = useTransform(
           } catch {
             /*
               Ignore decode errors.
-              Browser can still draw the image.
             */
           }
 
           if (!mounted) {
-            resolve();
+            resolve(false);
             return;
           }
 
@@ -504,27 +424,17 @@ const frameProgress = useTransform(
 
           setLoadedCount(loaded);
 
-          /*
-            If this is the currently visible frame,
-            redraw immediately.
-          */
-
-          if (
-            Math.abs(
-              currentFrameRef.current -
-                frameNumber
-            ) <= 2
-          ) {
-            renderFrame(
-              currentFrameRef.current
-            );
-          }
-
-          resolve();
+          resolve(true);
         };
 
         image.onerror = () => {
-          resolve();
+          console.error(
+            `Failed to load frame: ${FRAME_PATH(
+              frameNumber
+            )}`
+          );
+
+          resolve(false);
         };
 
         imageCache[
@@ -534,10 +444,10 @@ const frameProgress = useTransform(
     };
 
     /* -------------------------------------------------------
-       INITIAL FRAME
+       LOAD ALL FRAMES
     ------------------------------------------------------- */
 
-    const startLoading =
+    const preloadFrames =
       async () => {
         /*
           Load first frame immediately.
@@ -548,149 +458,82 @@ const frameProgress = useTransform(
         if (!mounted) return;
 
         /*
-          First frame is enough to remove loader.
+          Show first frame as soon as it exists.
+        */
+
+        updateCanvasDimensions();
+
+        requestAnimationFrame(() => {
+          if (mounted) {
+            drawFrame(1);
+          }
+        });
+
+        /*
+          Load remaining frames.
+
+          4 concurrent workers gives a good balance
+          between loading speed and browser responsiveness.
+        */
+
+        const queue = [];
+
+        for (
+          let i = 2;
+          i <= TOTAL_FRAMES;
+          i++
+        ) {
+          queue.push(i);
+        }
+
+        const worker =
+          async () => {
+            while (
+              mounted &&
+              queue.length > 0
+            ) {
+              const frame =
+                queue.shift();
+
+              if (
+                frame === undefined
+              ) {
+                break;
+              }
+
+              await loadImage(frame);
+            }
+          };
+
+        await Promise.all([
+          worker(),
+          worker(),
+          worker(),
+          worker(),
+        ]);
+
+        if (!mounted) return;
+
+        /*
+          All frames are ready.
         */
 
         setIsReady(true);
 
         /*
-          Make sure first frame is visible.
+          Draw current frame.
         */
 
         requestAnimationFrame(() => {
-          renderFrame(1);
+          if (mounted) {
+            renderFrame(
+              currentFrameRef.current
+            );
+          }
         });
-
-        /*
-          Mobile:
-          load nearby frames only.
-
-          Desktop:
-          progressively load everything.
-        */
-
-        if (
-          window.innerWidth <= 768
-        ) {
-          /*
-            Mobile initial window.
-          */
-
-          const mobileFrames =
-            [];
-
-          for (
-            let i = 2;
-            i <=
-              Math.min(
-                TOTAL_FRAMES,
-                12
-              );
-            i++
-          ) {
-            mobileFrames.push(i);
-          }
-
-          for (
-            const frame of mobileFrames
-          ) {
-            if (!mounted) break;
-
-            await loadImage(frame);
-          }
-
-          /*
-            Continue loading remaining
-            frames slowly in the background.
-          */
-
-          const remaining =
-            [];
-
-          for (
-            let i = 13;
-            i <= TOTAL_FRAMES;
-            i++
-          ) {
-            remaining.push(i);
-          }
-
-          const loadBackground =
-            async () => {
-              for (
-                const frame of remaining
-              ) {
-                if (!mounted) break;
-
-                await loadImage(frame);
-
-                /*
-                  Small yield prevents the browser
-                  from getting blocked.
-                */
-
-                await new Promise(
-                  (resolve) =>
-                    setTimeout(
-                      resolve,
-                      8
-                    )
-                );
-              }
-            };
-
-          loadBackground();
-        } else {
-          /*
-            Desktop:
-            controlled concurrent loading.
-          */
-
-          const queue =
-            [];
-
-          for (
-            let i = 2;
-            i <= TOTAL_FRAMES;
-            i++
-          ) {
-            queue.push(i);
-          }
-
-          const worker =
-            async () => {
-              while (
-                mounted &&
-                queue.length > 0
-              ) {
-                const frame =
-                  queue.shift();
-
-                if (
-                  frame === undefined
-                ) {
-                  break;
-                }
-
-                await loadImage(frame);
-              }
-            };
-
-          /*
-            Five concurrent workers.
-          */
-
-          await Promise.all([
-            worker(),
-            worker(),
-            worker(),
-            worker(),
-            worker(),
-          ]);
-        }
       };
 
-    startLoading();
+    preloadFrames();
 
     /* =======================================================
        RESIZE
@@ -700,9 +543,11 @@ const frameProgress = useTransform(
       updateCanvasDimensions();
 
       requestAnimationFrame(() => {
-        renderFrame(
-          currentFrameRef.current
-        );
+        if (mounted) {
+          drawFrame(
+            currentFrameRef.current
+          );
+        }
       });
     };
 
@@ -715,7 +560,7 @@ const frameProgress = useTransform(
     );
 
     /*
-      Initial canvas size.
+      Initial canvas dimensions.
     */
 
     updateCanvasDimensions();
@@ -739,10 +584,10 @@ const frameProgress = useTransform(
           null;
       }
 
-      imagesRef.current =
-        [];
+      imagesRef.current = [];
     };
   }, [
+    drawFrame,
     renderFrame,
     updateCanvasDimensions,
   ]);
@@ -787,18 +632,14 @@ const frameProgress = useTransform(
   ========================================================= */
 
   const loadingPercentage =
-    isMobile
-      ? isReady
-        ? 100
-        : 0
-      : Math.min(
-          100,
-          Math.round(
-            (loadedCount /
-              TOTAL_FRAMES) *
-              100
-          )
-        );
+    Math.min(
+      100,
+      Math.round(
+        (loadedCount /
+          TOTAL_FRAMES) *
+          100
+      )
+    );
 
   /* =========================================================
      UI
@@ -841,7 +682,7 @@ const frameProgress = useTransform(
                     width: `${loadingPercentage}%`,
                   }}
                   transition={{
-                    duration: 0.2,
+                    duration: 0.15,
                     ease: "linear",
                   }}
                 />
@@ -867,7 +708,12 @@ const frameProgress = useTransform(
             }}
             transition={{
               duration: 1,
-              ease: [0.22, 1, 0.36, 1],
+              ease: [
+                0.22,
+                1,
+                0.36,
+                1,
+              ],
             }}
           >
             <div className="premium-hero__eyebrow">
